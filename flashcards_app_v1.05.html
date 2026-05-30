@@ -1,0 +1,845 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f1117;--bg3:#22263a;--card:#1e2235;--card2:#252942;
+  --border:#2e3355;--border2:#3d4470;
+  --text:#e8eaf6;--text2:#9ba3c9;--text3:#6470a8;
+  --accent:#6c8fff;--accent2:#4f73ff;
+  --green:#4ade80;--green2:#16a34a;--green3:#052e16;
+  --red:#f87171;--red2:#dc2626;--red3:#2e0505;
+  --amber:#fbbf24;--amber2:#d97706;--amber3:#2d1b00;
+  --radius:12px;--radius2:20px;
+}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+.app{max-width:720px;margin:0 auto;padding:1rem}
+.screen{display:none}.screen.active{display:block}
+header{display:flex;align-items:center;justify-content:space-between;padding:.75rem 0 1.25rem;border-bottom:.5px solid var(--border);margin-bottom:1.25rem}
+.logo{font-size:1.1rem;font-weight:700;color:var(--accent);letter-spacing:-.5px}
+.logo span{color:var(--text2);font-weight:400}
+nav{display:flex;gap:4px}
+nav button{background:transparent;border:none;color:var(--text2);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;transition:all .2s}
+nav button:hover,nav button.active{background:var(--bg3);color:var(--text)}
+.section-title{font-size:.7rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.75rem}
+.deck-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:1.5rem}
+.deck-card{background:var(--card);border:.5px solid var(--border);border-radius:var(--radius);padding:1rem;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.deck-card:hover{border-color:var(--border2);background:var(--card2);transform:translateY(-1px)}
+.deck-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);transform:scaleX(0);transition:.2s;transform-origin:left}
+.deck-card:hover::before{transform:scaleX(1)}
+.deck-icon{font-size:1.4rem;margin-bottom:.5rem}
+.deck-name{font-size:.88rem;font-weight:600;margin-bottom:.2rem}
+.deck-meta{font-size:.7rem;color:var(--text2)}
+.deck-progress{height:3px;background:var(--bg3);border-radius:2px;margin-top:.75rem;overflow:hidden}
+.deck-progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:.4s}
+.badge-new{position:absolute;top:8px;right:8px;background:var(--accent2);color:#fff;font-size:.58rem;font-weight:700;padding:2px 6px;border-radius:4px}
+
+/* STUDY */
+.study-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}
+.back-btn{background:var(--bg3);border:.5px solid var(--border);color:var(--text2);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:13px;transition:.2s}
+.back-btn:hover{color:var(--text);border-color:var(--border2)}
+.study-title{font-size:.95rem;font-weight:600;flex:1}
+.progress-bar{height:4px;background:var(--bg3);border-radius:2px;margin-bottom:1.25rem;overflow:hidden}
+.progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:.4s}
+
+/* CARD FLIP — bug fix: faces are always in the right state; content swaps mid-flip when card is face-down */
+.card-area{perspective:1000px;margin-bottom:1.25rem}
+.card-scene{width:100%;height:220px;position:relative;transform-style:preserve-3d}
+.card-face{
+  position:absolute;inset:0;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  background:var(--card);border:.5px solid var(--border);
+  border-radius:var(--radius2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:2rem;text-align:center;cursor:pointer;
+}
+.card-face.back{transform:rotateY(180deg);background:var(--card2);}
+/* flip state toggled on scene */
+.card-scene.flipped{transform:rotateY(180deg);transition:transform .5s cubic-bezier(.4,0,.2,1)}
+.card-scene.resetting{transition:none!important}
+.card-label{font-size:.62rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);margin-bottom:.6rem;font-weight:600}
+.card-word{font-size:1.75rem;font-weight:700;color:var(--text);line-height:1.2;margin-bottom:.4rem}
+.card-reading{font-size:.95rem;color:var(--text2)}
+.card-example{font-size:.78rem;color:var(--text3);font-style:italic;margin-top:.5rem;max-width:100%}
+.card-hint{font-size:.7rem;color:var(--text3);position:absolute;bottom:1rem}
+
+.rating-area{display:none;gap:10px;margin-bottom:1rem}
+.rating-area.show{display:grid;grid-template-columns:repeat(4,1fr)}
+.rate-btn{border:none;border-radius:10px;padding:.65rem .5rem;cursor:pointer;font-size:.75rem;font-weight:600;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:3px}
+.rate-btn:active{transform:scale(.96)}
+.rate-btn .ri{font-size:1.1rem}.rate-btn .rl{font-size:.63rem;opacity:.8}
+.rate-btn.again{background:var(--red3);color:var(--red);border:.5px solid var(--red2)}
+.rate-btn.hard{background:var(--amber3);color:var(--amber);border:.5px solid var(--amber2)}
+.rate-btn.good{background:#0d1f3c;color:#6c8fff;border:.5px solid #3056b8}
+.rate-btn.easy{background:var(--green3);color:var(--green);border:.5px solid var(--green2)}
+.rate-btn:hover{filter:brightness(1.2)}
+.flip-hint{text-align:center;color:var(--text3);font-size:.78rem;margin-bottom:.75rem;transition:opacity .25s}
+
+.session-end{text-align:center;padding:2rem 1rem}
+.session-emoji{font-size:3rem;margin-bottom:.75rem}
+.session-title{font-size:1.3rem;font-weight:700;margin-bottom:.5rem}
+.session-sub{color:var(--text2);font-size:.9rem;margin-bottom:1.5rem}
+.session-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.5rem}
+.sstat{background:var(--card);border:.5px solid var(--border);border-radius:var(--radius);padding:1rem;text-align:center}
+.sstat-num{font-size:1.5rem;font-weight:700}
+.sstat-lbl{font-size:.7rem;color:var(--text2);margin-top:2px}
+.gn{color:var(--green)}.rn{color:var(--red)}.an{color:var(--amber)}
+.action-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.btn-primary{background:var(--accent2);color:#fff;border:none;padding:.65rem 1.5rem;border-radius:10px;cursor:pointer;font-size:.9rem;font-weight:600;transition:.2s}
+.btn-primary:hover{background:var(--accent);transform:translateY(-1px)}
+.btn-secondary{background:var(--card);color:var(--text2);border:.5px solid var(--border);padding:.65rem 1.5rem;border-radius:10px;cursor:pointer;font-size:.9rem;font-weight:600;transition:.2s}
+.btn-secondary:hover{color:var(--text);border-color:var(--border2)}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.25rem}
+.stat-card{background:var(--card);border:.5px solid var(--border);border-radius:var(--radius);padding:1rem}
+.stat-num{font-size:1.4rem;font-weight:700;margin-bottom:2px}
+.stat-lbl{font-size:.7rem;color:var(--text2)}
+.chart-wrap{background:var(--card);border:.5px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.25rem}
+.chart-title{font-size:.7rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:1rem}
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:110px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%}
+.bar-wrap{flex:1;display:flex;align-items:flex-end;width:100%}
+.bar{width:100%;border-radius:4px 4px 0 0;min-height:3px;transition:.5s}
+.bar-day{font-size:.6rem;color:var(--text3)}.bar-val{font-size:.6rem;color:var(--text2)}
+.acc-ring{display:flex;align-items:center;gap:1.5rem}
+.ring-wrap{position:relative;width:80px;height:80px;flex-shrink:0}
+.ring-wrap svg{transform:rotate(-90deg)}
+.ring-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700}
+.acc-bd{flex:1}
+.acc-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:.75rem}
+.acc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.acc-bg{flex:1;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.acc-fill{height:100%;border-radius:3px}
+.acc-pct{color:var(--text2);min-width:28px;text-align:right}
+.dsl{display:flex;flex-direction:column;gap:8px}
+.dsl-item{background:var(--card);border:.5px solid var(--border);border-radius:10px;padding:.75rem 1rem;display:flex;align-items:center;gap:12px}
+.dsl-icon{font-size:1rem;width:26px;text-align:center}
+.dsl-info{flex:1}
+.dsl-name{font-size:.83rem;font-weight:600}
+.dsl-meta{font-size:.68rem;color:var(--text2);margin-top:1px}
+.dsl-acc{font-size:.83rem;font-weight:700}
+
+/* DOWNLOAD */
+.dl-tabs{display:flex;gap:6px;margin-bottom:1rem}
+.dl-tab{background:var(--bg3);color:var(--text2);padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px;transition:.2s;border:none}
+.dl-tab.active{background:var(--accent2);color:#fff}
+.dl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:1.25rem}
+.dl-card{background:var(--card);border:.5px solid var(--border);border-radius:var(--radius);padding:1rem;display:flex;flex-direction:column;gap:.5rem}
+.dl-top{display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem}
+.dl-icon{font-size:1.4rem}
+.dl-badge{font-size:.58rem;font-weight:700;padding:2px 7px;border-radius:4px;white-space:nowrap}
+.badge-free{background:#0d2b1a;color:var(--green)}
+.badge-pop{background:#1a1640;color:#a99eff}
+.badge-imp{background:#1a1205;color:var(--amber)}
+.dl-name{font-size:.85rem;font-weight:600;line-height:1.2}
+.dl-desc{font-size:.7rem;color:var(--text2);line-height:1.4}
+.dl-info{display:flex;gap:.75rem;font-size:.67rem;color:var(--text3)}
+.dl-btn{color:#fff;border:none;padding:6px;border-radius:8px;cursor:pointer;font-size:.76rem;font-weight:600;transition:.2s;margin-top:auto;background:var(--accent2)}
+.dl-btn:hover{background:var(--accent)}
+.dl-btn.inst{background:var(--green3);color:var(--green);border:.5px solid var(--green2);cursor:default}
+
+/* IMPORT */
+.import-box{background:var(--card);border:.5px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem}
+.import-subtabs{display:flex;gap:4px;margin-bottom:1rem;background:var(--bg3);border-radius:8px;padding:3px}
+.import-subtab{flex:1;background:transparent;border:none;color:var(--text2);padding:6px;border-radius:6px;cursor:pointer;font-size:.76rem;transition:.2s}
+.import-subtab.active{background:var(--card);color:var(--text);font-weight:600}
+.irow{display:flex;gap:8px;margin-bottom:.75rem}
+.irow input{flex:1;background:var(--bg3);border:.5px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;font-size:.82rem;outline:none;transition:.2s}
+.irow input:focus{border-color:var(--accent)}
+.irow input::placeholder{color:var(--text3)}
+.irow button{background:var(--accent2);color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:600;white-space:nowrap;transition:.2s}
+.irow button:hover{background:var(--accent)}
+.irow button:disabled{opacity:.5;cursor:default}
+.paste-area{width:100%;min-height:130px;background:var(--bg3);border:.5px solid var(--border);color:var(--text);padding:.75rem;border-radius:8px;font-size:.76rem;font-family:monospace;resize:vertical;outline:none;transition:.2s;line-height:1.5}
+.paste-area:focus{border-color:var(--accent)}
+.paste-area::placeholder{color:var(--text3)}
+.paste-actions{display:flex;gap:8px;margin-top:.75rem}
+.sec-info{background:var(--bg3);border:.5px solid var(--border);border-radius:8px;padding:.6rem .9rem;margin-bottom:.6rem;font-size:.7rem;color:var(--text2);line-height:1.5}
+.sec-info strong{color:var(--text)}
+.vlog{background:var(--bg);border:.5px solid var(--border);border-radius:8px;padding:.6rem .9rem;font-size:.7rem;font-family:monospace;color:var(--text2);max-height:130px;overflow-y:auto;display:none;margin-top:.75rem}
+.ll{display:flex;gap:6px;margin-bottom:2px;align-items:flex-start}
+.lok{color:var(--green)}.lerr{color:var(--red)}.lwarn{color:var(--amber)}.linfo{color:var(--accent)}
+.preview-box{background:var(--card);border:.5px solid var(--border);border-radius:var(--radius);padding:1rem;margin-bottom:.75rem;display:none}
+.preview-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+.preview-title{font-size:.88rem;font-weight:600}
+.preview-cards{display:flex;flex-direction:column;gap:5px;max-height:180px;overflow-y:auto}
+.pci{background:var(--bg3);border-radius:8px;padding:.45rem .7rem;font-size:.76rem;display:flex;gap:.75rem}
+.pcif{color:var(--text);font-weight:600;flex:1}.pcib{color:var(--text2);flex:1}
+.preview-actions{display:flex;gap:8px;margin-top:.75rem}
+.fmt-box{background:var(--bg3);border:.5px solid var(--border2);border-radius:8px;padding:.7rem .9rem;margin-bottom:.75rem}
+.fmt-title{font-size:.68rem;font-weight:600;color:var(--accent);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.5px}
+.fmt-code{font-family:monospace;font-size:.68rem;color:var(--text2);line-height:1.6;white-space:pre}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:#1e2235;border:.5px solid var(--accent);color:var(--text);padding:.6rem 1.25rem;border-radius:10px;font-size:.82rem;transition:transform .3s;z-index:999}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.err{border-color:var(--red)}
+</style>
+
+<div class="app">
+<header>
+  <div class="logo">flash<span>lingo</span></div>
+  <nav>
+    <button class="active" onclick="showScreen('home',this)">Decks</button>
+    <button onclick="showScreen('stats',this)">Estatísticas</button>
+    <button onclick="showScreen('download',this)">Baixar</button>
+  </nav>
+</header>
+
+<!-- HOME -->
+<div class="screen active" id="screen-home">
+  <p class="section-title">Meus Decks</p>
+  <div class="deck-grid" id="deck-grid"></div>
+  <p class="section-title">Sessão de hoje</p>
+  <div id="today-info" style="background:var(--card);border:.5px solid var(--border);border-radius:var(--radius);padding:1rem;font-size:.85rem;color:var(--text2)"></div>
+</div>
+
+<!-- STUDY -->
+<div class="screen" id="screen-study">
+  <div class="study-header">
+    <button class="back-btn" onclick="exitStudy()">← Voltar</button>
+    <div class="study-title" id="study-deck-name"></div>
+    <span id="study-count" style="font-size:.76rem;color:var(--text2)"></span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="study-progress" style="width:0%"></div></div>
+  <div class="card-area">
+    <!-- The scene rotates; faces stay put via backface-visibility -->
+    <div class="card-scene" id="card-scene" onclick="flipCard()">
+      <div class="card-face front" id="face-front">
+        <div class="card-label">frente</div>
+        <div class="card-word" id="cf-word"></div>
+        <div class="card-reading" id="cf-reading"></div>
+        <div class="card-hint">Clique para revelar</div>
+      </div>
+      <div class="card-face back" id="face-back">
+        <div class="card-label">verso</div>
+        <div class="card-word" id="cb-word"></div>
+        <div class="card-example" id="cb-example"></div>
+        <div class="card-hint">Avalie sua resposta abaixo</div>
+      </div>
+    </div>
+  </div>
+  <p class="flip-hint" id="flip-hint">Toque no card para revelar a resposta</p>
+  <div class="rating-area" id="rating-area">
+    <button class="rate-btn again" onclick="rate(0)"><span class="ri">✗</span><span class="rl">Errei</span></button>
+    <button class="rate-btn hard"  onclick="rate(1)"><span class="ri">~</span><span class="rl">Difícil</span></button>
+    <button class="rate-btn good"  onclick="rate(2)"><span class="ri">✓</span><span class="rl">Bom</span></button>
+    <button class="rate-btn easy"  onclick="rate(3)"><span class="ri">★</span><span class="rl">Fácil</span></button>
+  </div>
+  <div class="session-end" id="session-end" style="display:none">
+    <div class="session-emoji" id="se-emoji"></div>
+    <div class="session-title" id="se-title"></div>
+    <div class="session-sub" id="se-sub"></div>
+    <div class="session-stats">
+      <div class="sstat"><div class="sstat-num gn" id="se-ok">0</div><div class="sstat-lbl">Acertos</div></div>
+      <div class="sstat"><div class="sstat-num rn" id="se-no">0</div><div class="sstat-lbl">Erros</div></div>
+      <div class="sstat"><div class="sstat-num an" id="se-ac">0%</div><div class="sstat-lbl">Precisão</div></div>
+    </div>
+    <div class="action-btns">
+      <button class="btn-primary" onclick="exitStudy()">Finalizar</button>
+      <button class="btn-secondary" onclick="restartSession()">Estudar novamente</button>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="screen" id="screen-stats">
+  <p class="section-title">Visão geral</p>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-num gn" id="s-ok">0</div><div class="stat-lbl">Total acertos</div></div>
+    <div class="stat-card"><div class="stat-num rn" id="s-no">0</div><div class="stat-lbl">Total erros</div></div>
+    <div class="stat-card"><div class="stat-num" id="s-rev">0</div><div class="stat-lbl">Cards revistos</div></div>
+  </div>
+  <div class="chart-wrap">
+    <div class="chart-title">Atividade — últimos 7 dias</div>
+    <div class="bar-chart" id="act-chart"></div>
+  </div>
+  <div class="chart-wrap">
+    <div class="chart-title">Precisão geral</div>
+    <div class="acc-ring">
+      <div class="ring-wrap">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="32" fill="none" stroke="var(--bg3)" stroke-width="10"/>
+          <circle cx="40" cy="40" r="32" fill="none" stroke="var(--green)" stroke-width="10" stroke-linecap="round" id="ring-c" stroke-dasharray="201" stroke-dashoffset="201"/>
+        </svg>
+        <div class="ring-center" id="ring-pct">0%</div>
+      </div>
+      <div class="acc-bd">
+        <div class="acc-row"><div class="acc-dot" style="background:var(--green)"></div><span style="color:var(--text2)">Fácil/Bom</span><div class="acc-bg"><div class="acc-fill" id="ab-g" style="background:var(--green)"></div></div><span class="acc-pct" id="ap-g">0%</span></div>
+        <div class="acc-row"><div class="acc-dot" style="background:var(--amber)"></div><span style="color:var(--text2)">Difícil</span><div class="acc-bg"><div class="acc-fill" id="ab-h" style="background:var(--amber)"></div></div><span class="acc-pct" id="ap-h">0%</span></div>
+        <div class="acc-row"><div class="acc-dot" style="background:var(--red)"></div><span style="color:var(--text2)">Errei</span><div class="acc-bg"><div class="acc-fill" id="ab-w" style="background:var(--red)"></div></div><span class="acc-pct" id="ap-w">0%</span></div>
+      </div>
+    </div>
+  </div>
+  <p class="section-title">Por deck</p>
+  <div class="dsl" id="dsl"></div>
+</div>
+
+<!-- DOWNLOAD -->
+<div class="screen" id="screen-download">
+  <div class="dl-tabs">
+    <button class="dl-tab active" onclick="switchTab('builtin',this)">Decks inclusos</button>
+    <button class="dl-tab" onclick="switchTab('external',this)">Importar</button>
+  </div>
+  <div id="tab-builtin"><div class="dl-grid" id="dl-grid"></div></div>
+  <div id="tab-external" style="display:none">
+    <div class="import-box">
+      <div style="font-size:.85rem;font-weight:600;margin-bottom:.35rem">Importar deck</div>
+      <div style="font-size:.75rem;color:var(--text2);margin-bottom:1rem">Cole o JSON diretamente ou use uma URL pública.</div>
+      <div class="import-subtabs">
+        <button class="import-subtab active" onclick="switchITab('paste',this)">📋 Colar JSON</button>
+        <button class="import-subtab" onclick="switchITab('url',this)">🔗 Via URL</button>
+      </div>
+      <div id="itab-paste">
+        <textarea class="paste-area" id="paste-area" placeholder='Cole o JSON aqui:&#10;{"name":"Meu Deck","icon":"📚","cards":[{"f":"近","b":"perto","r":"キン","ex":"近所 vizinhança"}]}'></textarea>
+        <div class="paste-actions">
+          <button class="btn-primary" onclick="importFromPaste()">Validar e importar</button>
+          <button class="btn-secondary" onclick="clearPaste()">Limpar</button>
+        </div>
+      </div>
+      <div id="itab-url" style="display:none">
+        <div class="irow">
+          <input type="url" id="import-url" placeholder="https://exemplo.com/deck.json" maxlength="500"/>
+          <button id="ibtn" onclick="importFromUrl()">Buscar</button>
+        </div>
+        <div class="sec-info"><strong>Segurança:</strong> apenas HTTPS · máx 1 MB · somente .json · sem execução de código</div>
+      </div>
+      <div class="vlog" id="vlog"></div>
+    </div>
+    <div class="preview-box" id="preview-box">
+      <div class="preview-header">
+        <div class="preview-title" id="prev-title"></div>
+        <span style="font-size:.7rem;color:var(--text2)" id="prev-count"></span>
+      </div>
+      <div class="preview-cards" id="prev-cards"></div>
+      <div class="preview-actions">
+        <button class="btn-primary" onclick="confirmImport()">✓ Confirmar importação</button>
+        <button class="btn-secondary" onclick="cancelPreview()">Cancelar</button>
+      </div>
+    </div>
+    <div class="fmt-box">
+      <div class="fmt-title">Formato JSON</div>
+      <div class="fmt-code">{"name":"Nome","icon":"📚","cards":[
+  {"f":"frente","b":"verso","r":"leitura (opcional)","ex":"exemplo (opcional)"}
+]}</div>
+    </div>
+  </div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ── constants ─────────────────────────────────────────────────────────────
+const MAX_BYTES=1024*1024;
+const FLIP_MS=520; // must match CSS transition duration
+const K={D:'fl_d5',S:'fl_s5',A:'fl_a5',C:'fl_c5',I:'fl_i5'};
+
+// ── built-in decks ────────────────────────────────────────────────────────
+const BUILTIN=[
+  {id:'en-verbs',name:'Phrasal Verbs EN',icon:'🇺🇸',cards:[
+    {f:'Give up',b:'Desistir',ex:'Don\'t give up on your dreams'},
+    {f:'Look up',b:'Pesquisar',ex:'Look it up in the dictionary'},
+    {f:'Run out of',b:'Ficar sem',ex:'We ran out of milk'},
+    {f:'Bring up',b:'Mencionar',ex:'He brought up a good point'},
+    {f:'Call off',b:'Cancelar',ex:'They called off the meeting'},
+    {f:'Put off',b:'Adiar',ex:'Stop putting it off!'},
+    {f:'Figure out',b:'Resolver',ex:'Can you figure out this problem?'},
+    {f:'Break down',b:'Quebrar / Desmoronar',ex:'My car broke down'},
+    {f:'Get along',b:'Se dar bem',ex:'They get along really well'},
+    {f:'Turn down',b:'Recusar',ex:'She turned down the offer'},
+  ]},
+  {id:'jp-basic',name:'Japonês N5 Básico',icon:'🇯🇵',cards:[
+    {f:'水',r:'みず (mizu)',b:'Água',ex:'水を飲む — beber água'},
+    {f:'火',r:'ひ (hi)',b:'Fogo',ex:'火が燃える — o fogo queima'},
+    {f:'山',r:'やま (yama)',b:'Montanha',ex:'富士山 — Monte Fuji'},
+    {f:'猫',r:'ねこ (neko)',b:'Gato',ex:'猫が好き — eu gosto de gatos'},
+    {f:'食べる',r:'たべる',b:'Comer',ex:'何を食べる？'},
+    {f:'飲む',r:'のむ',b:'Beber',ex:'水を飲む'},
+    {f:'大きい',r:'おおきい',b:'Grande',ex:'大きい犬'},
+    {f:'小さい',r:'ちいさい',b:'Pequeno',ex:'小さい猫'},
+    {f:'赤い',r:'あかい',b:'Vermelho',ex:'赤いバラ'},
+    {f:'学校',r:'がっこう',b:'Escola',ex:'学校に行く'},
+    {f:'電車',r:'でんしゃ',b:'Trem',ex:'電車で行く — ir de trem'},
+    {f:'友達',r:'ともだち',b:'Amigo(a)',ex:'友達と遊ぶ'},
+  ]},
+  {id:'jp-n4',name:'Japonês N4 Kanji',icon:'🗾',cards:[
+    {f:'近',r:'キン / ちか(い)',b:'Perto',ex:'近所(きんじょ) — vizinhança'},
+    {f:'遠',r:'エン / とお(い)',b:'Longe',ex:'遠足(えんそく) — excursão'},
+    {f:'低',r:'テイ / ひく(い)',b:'Baixo',ex:'最低(さいてい) — mínimo'},
+    {f:'高',r:'コウ / たか(い)',b:'Alto / Caro',ex:'高校(こうこう) — colégio'},
+    {f:'広',r:'コウ / ひろ(い)',b:'Amplo / Largo',ex:'広場(ひろば) — praça'},
+    {f:'細',r:'サイ / ほそ(い)',b:'Fino / Delgado',ex:'細道(ほそみち) — caminho estreito'},
+    {f:'太',r:'タイ / ふと(い)',b:'Grosso / Gordo',ex:'太陽(たいよう) — sol'},
+    {f:'重',r:'ジュウ / おも(い)',b:'Pesado',ex:'体重(たいじゅう) — peso corporal'},
+    {f:'軽',r:'ケイ / かる(い)',b:'Leve',ex:'軽食(けいしょく) — lanche'},
+    {f:'強',r:'キョウ / つよ(い)',b:'Forte',ex:'強風(きょうふう) — vento forte'},
+  ]},
+  {id:'es-basic',name:'Espanhol Básico',icon:'🇪🇸',cards:[
+    {f:'Rojo',b:'Vermelho',ex:'El tomate es rojo'},
+    {f:'Azul',b:'Azul',ex:'El cielo es azul'},
+    {f:'Verde',b:'Verde',ex:'La hierba es verde'},
+    {f:'Hablar',b:'Falar',ex:'Quiero hablar contigo'},
+    {f:'Comer',b:'Comer',ex:'Vamos a comer juntos'},
+    {f:'Dormir',b:'Dormir',ex:'Necesito dormir más'},
+    {f:'Casa',b:'Casa',ex:'Mi casa es tu casa'},
+    {f:'Agua',b:'Água',ex:'¿Puedes traerme agua?'},
+    {f:'Amigo',b:'Amigo',ex:'Él es mi mejor amigo'},
+    {f:'Trabajo',b:'Trabalho',ex:'Tengo mucho trabajo hoy'},
+    {f:'Tiempo',b:'Tempo / Clima',ex:'¿Qué tiempo hace?'},
+    {f:'Gracias',b:'Obrigado(a)',ex:'Muchas gracias por todo'},
+  ]},
+  {id:'fr-basic',name:'Francês Básico',icon:'🇫🇷',cards:[
+    {f:'Bonjour',b:'Bom dia / Olá',ex:'Bonjour, comment ça va?'},
+    {f:'Merci',b:'Obrigado(a)',ex:'Merci beaucoup!'},
+    {f:'S\'il vous plaît',b:'Por favor',ex:'Un café, s\'il vous plaît'},
+    {f:'Maison',b:'Casa',ex:'Ma maison est grande'},
+    {f:'Manger',b:'Comer',ex:'J\'aime manger des croissants'},
+    {f:'Boire',b:'Beber',ex:'Je veux boire de l\'eau'},
+    {f:'Ami',b:'Amigo',ex:'C\'est mon meilleur ami'},
+    {f:'Beau / Belle',b:'Bonito(a)',ex:'C\'est une belle journée'},
+    {f:'Petit',b:'Pequeno',ex:'Un petit café, s\'il vous plaît'},
+    {f:'Grand',b:'Grande',ex:'Une grande ville'},
+    {f:'Voiture',b:'Carro',ex:'Ma voiture est rouge'},
+    {f:'Travail',b:'Trabalho',ex:'J\'ai beaucoup de travail'},
+  ]},
+  {id:'de-basic',name:'Alemão Básico',icon:'🇩🇪',cards:[
+    {f:'Hallo',b:'Olá',ex:'Hallo! Wie geht\'s?'},
+    {f:'Danke',b:'Obrigado',ex:'Danke schön!'},
+    {f:'Bitte',b:'Por favor / De nada',ex:'Ja, bitte'},
+    {f:'Haus',b:'Casa',ex:'Das Haus ist groß'},
+    {f:'Essen',b:'Comer / Comida',ex:'Das Essen ist lecker'},
+    {f:'Trinken',b:'Beber',ex:'Ich möchte Wasser trinken'},
+    {f:'Freund',b:'Amigo',ex:'Er ist mein bester Freund'},
+    {f:'Arbeit',b:'Trabalho',ex:'Die Arbeit macht Spaß'},
+    {f:'Schön',b:'Bonito / Legal',ex:'Das ist sehr schön!'},
+    {f:'Groß',b:'Grande',ex:'Berlin ist eine große Stadt'},
+    {f:'Klein',b:'Pequeno',ex:'Ein kleines Café'},
+    {f:'Auto',b:'Carro',ex:'Mein Auto ist neu'},
+  ]},
+  {f:'zh-basic',id:'zh-basic',name:'Mandarim Básico',icon:'🇨🇳',cards:[
+    {f:'你好',r:'nǐ hǎo',b:'Olá',ex:'你好！很高兴认识你'},
+    {f:'谢谢',r:'xiè xiè',b:'Obrigado',ex:'谢谢你的帮助'},
+    {f:'水',r:'shuǐ',b:'Água',ex:'我要一杯水'},
+    {f:'吃饭',r:'chī fàn',b:'Comer',ex:'我们去吃饭吧！'},
+    {f:'朋友',r:'péng yǒu',b:'Amigo',ex:'他是我的好朋友'},
+    {f:'学习',r:'xué xí',b:'Estudar',ex:'我在学习中文'},
+    {f:'漂亮',r:'piào liàng',b:'Bonito(a)',ex:'她很漂亮'},
+    {f:'工作',r:'gōng zuò',b:'Trabalho / Trabalhar',ex:'我在工作'},
+    {f:'家',r:'jiā',b:'Casa / Família',ex:'我回家了 — fui pra casa'},
+    {f:'书',r:'shū',b:'Livro',ex:'这本书很好 — este livro é ótimo'},
+  ]},
+  {id:'it-basic',name:'Italiano Básico',icon:'🇮🇹',cards:[
+    {f:'Ciao',b:'Olá / Tchau',ex:'Ciao! Come stai?'},
+    {f:'Grazie',b:'Obrigado(a)',ex:'Grazie mille!'},
+    {f:'Per favore',b:'Por favor',ex:'Un caffè, per favore'},
+    {f:'Casa',b:'Casa',ex:'La mia casa è bella'},
+    {f:'Mangiare',b:'Comer',ex:'Voglio mangiare la pizza'},
+    {f:'Bello / Bella',b:'Bonito(a)',ex:'Che bella giornata!'},
+    {f:'Amico',b:'Amigo',ex:'Lui è il mio migliore amico'},
+    {f:'Lavoro',b:'Trabalho',ex:'Ho molto lavoro oggi'},
+    {f:'Grande',b:'Grande',ex:'Roma è una grande città'},
+    {f:'Piccolo',b:'Pequeno',ex:'Un piccolo problema'},
+    {f:'Macchina',b:'Carro',ex:'La mia macchina è rossa'},
+    {f:'Acqua',b:'Água',ex:'Vorrei un bicchiere d\'acqua'},
+  ]},
+  {id:'ko-basic',name:'Coreano Básico',icon:'🇰🇷',cards:[
+    {f:'안녕하세요',r:'annyeonghaseyo',b:'Olá (formal)',ex:'안녕하세요! 반갑습니다'},
+    {f:'감사합니다',r:'gamsahamnida',b:'Obrigado(a)',ex:'정말 감사합니다'},
+    {f:'물',r:'mul',b:'Água',ex:'물 한 잔 주세요'},
+    {f:'먹다',r:'meokda',b:'Comer',ex:'밥을 먹다 — comer arroz'},
+    {f:'친구',r:'chingu',b:'Amigo(a)',ex:'내 친구야 — é meu amigo'},
+    {f:'학교',r:'hakgyo',b:'Escola',ex:'학교에 가다 — ir à escola'},
+    {f:'예쁘다',r:'yeppeuda',b:'Bonito(a)',ex:'정말 예뻐요 — é muito bonito'},
+    {f:'크다',r:'keuda',b:'Grande',ex:'집이 크다 — a casa é grande'},
+    {f:'작다',r:'jakda',b:'Pequeno',ex:'방이 작아요 — o quarto é pequeno'},
+    {f:'일',r:'il',b:'Trabalho / Um',ex:'일이 많아요 — tenho muito trabalho'},
+  ]},
+  {id:'ru-basic',name:'Russo Básico',icon:'🇷🇺',cards:[
+    {f:'Привет',r:'Privet',b:'Olá (informal)',ex:'Привет! Как дела?'},
+    {f:'Спасибо',r:'Spasibo',b:'Obrigado(a)',ex:'Большое спасибо!'},
+    {f:'Пожалуйста',r:'Pozhaluysta',b:'Por favor / De nada',ex:'Да, пожалуйста'},
+    {f:'Вода',r:'Voda',b:'Água',ex:'Дайте воды, пожалуйста'},
+    {f:'Есть',r:'Est\'',b:'Comer',ex:'Я хочу есть — quero comer'},
+    {f:'Друг',r:'Drug',b:'Amigo',ex:'Он мой друг — ele é meu amigo'},
+    {f:'Дом',r:'Dom',b:'Casa',ex:'Мой дом — minha casa'},
+    {f:'Работа',r:'Rabota',b:'Trabalho',ex:'У меня много работы'},
+    {f:'Красивый',r:'Krasiviy',b:'Bonito(a)',ex:'Какой красивый город!'},
+    {f:'Большой',r:'Bolshoy',b:'Grande',ex:'Большой город — cidade grande'},
+  ]},
+  {id:'ar-basic',name:'Árabe Básico',icon:'🇸🇦',cards:[
+    {f:'مرحبا',r:'Marhaba',b:'Olá',ex:'مرحبا! كيف حالك؟'},
+    {f:'شكرا',r:'Shukran',b:'Obrigado(a)',ex:'شكرا جزيلا!'},
+    {f:'من فضلك',r:'Min fadlak',b:'Por favor',ex:'القهوة من فضلك'},
+    {f:'ماء',r:'Ma\'a',b:'Água',ex:'أريد ماء من فضلك'},
+    {f:'أكل',r:'Akal',b:'Comida / Comer',ex:'أريد أن آكل'},
+    {f:'صديق',r:'Sadiq',b:'Amigo',ex:'هو صديقي — ele é meu amigo'},
+    {f:'بيت',r:'Bayt',b:'Casa',ex:'هذا بيتي — esta é minha casa'},
+    {f:'كبير',r:'Kabir',b:'Grande',ex:'مدينة كبيرة — cidade grande'},
+    {f:'صغير',r:'Saghir',b:'Pequeno',ex:'ولد صغير — menino pequeno'},
+    {f:'جميل',r:'Jamil',b:'Bonito(a)',ex:'يوم جميل — dia bonito'},
+  ]},
+];
+
+// ── security ──────────────────────────────────────────────────────────────
+const san=s=>s==null?'':String(s).replace(/[<>"'&]/g,c=>({'<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#x27;','&':'&amp;'}[c]));
+const strip=s=>String(s||'').replace(/<[^>]*>/g,'').trim();
+const lim=(s,n)=>String(s||'').slice(0,n);
+
+function valUrl(raw){
+  let u;try{u=new URL(raw.trim());}catch{return{ok:false,msg:'URL inválida'};}
+  if(u.protocol!=='https:')return{ok:false,msg:'Apenas HTTPS'};
+  if(u.username||u.password)return{ok:false,msg:'Credenciais na URL não permitidas'};
+  const bl=['localhost','127.','0.0.0.0','::1','169.254.','10.','192.168.','172.'];
+  if(bl.some(b=>u.hostname.startsWith(b)))return{ok:false,msg:'Endereço interno não permitido'};
+  if(!u.pathname.toLowerCase().endsWith('.json'))return{ok:false,msg:'URL deve apontar para arquivo .json'};
+  return{ok:true,url:u.href};
+}
+function valSchema(raw){
+  const logs=[];
+  let obj;try{obj=JSON.parse(raw);}catch(e){logs.push({t:'err',m:'JSON inválido: '+e.message});return{ok:false,logs};}
+  logs.push({t:'ok',m:'JSON válido'});
+  if(typeof obj!=='object'||Array.isArray(obj)){logs.push({t:'err',m:'Raiz deve ser objeto'});return{ok:false,logs};}
+  if(!obj.name||typeof obj.name!=='string'){logs.push({t:'err',m:'"name" ausente'});return{ok:false,logs};}
+  if(!Array.isArray(obj.cards)){logs.push({t:'err',m:'"cards" deve ser array'});return{ok:false,logs};}
+  logs.push({t:'ok',m:`Nome: "${lim(obj.name,60)}"`});
+  if(obj.cards.length>1000)logs.push({t:'warn',m:'Truncando em 1000 cards'});
+  const cards=[];let sk=0;
+  for(let i=0;i<Math.min(obj.cards.length,1000);i++){
+    const c=obj.cards[i];
+    if(typeof c!=='object'||!c.f||!c.b){sk++;continue;}
+    const s={f:lim(strip(c.f),200),b:lim(strip(c.b),200),r:c.r?lim(strip(c.r),100):'',ex:c.ex?lim(strip(c.ex),300):''};
+    if(/<script|javascript:|on\w+=/i.test(s.f+s.b)){sk++;continue;}
+    cards.push(s);
+  }
+  if(sk)logs.push({t:'warn',m:`${sk} card(s) ignorados`});
+  if(!cards.length){logs.push({t:'err',m:'Nenhum card válido'});return{ok:false,logs};}
+  logs.push({t:'ok',m:`${cards.length} cards validados`});
+  const icon=obj.icon&&/^\p{Emoji}/u.test(String(obj.icon))?String(obj.icon).slice(0,2):'📦';
+  return{ok:true,logs,deck:{id:'ext_'+Date.now(),name:lim(strip(obj.name),80),icon,cards,isCustom:true}};
+}
+
+// ── state ─────────────────────────────────────────────────────────────────
+const ld=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch{return d;}};
+const sv=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch{}};
+
+let prog=ld(K.D,{}), stats=ld(K.S,{ok:0,no:0,r:{0:0,1:0,2:0,3:0},dk:{}}),
+    act=ld(K.A,[]), custom=ld(K.C,[]),
+    instIds=new Set(ld(K.I,['en-verbs']));
+const allDecks=()=>[...BUILTIN,...custom];
+let pending=null;
+
+// ── SM-2 ──────────────────────────────────────────────────────────────────
+function gc(did,i){
+  if(!prog[did])prog[did]={};
+  if(!prog[did][i])prog[did][i]={ef:2.5,iv:0,reps:0,due:0,tr:0,tw:0};
+  return prog[did][i];
+}
+function sm2(cd,q){
+  if(q<2){cd.reps=0;cd.iv=1;}
+  else{cd.iv=cd.reps===0?1:cd.reps===1?6:Math.round(cd.iv*cd.ef);cd.reps++;}
+  cd.ef=Math.max(1.3,cd.ef+(0.1-(3-q)*(0.08+(3-q)*0.02)));
+  cd.due=Date.now()+cd.iv*86400000;
+}
+function buildQ(did){
+  const d=allDecks().find(d=>d.id===did);if(!d)return[];
+  const now=Date.now(),due=[],fr=[];
+  d.cards.forEach((_,i)=>{const c=gc(did,i);(c.reps===0?fr:c.due<=now?due:[]).push(i);});
+  const sh=a=>{for(let i=a.length-1;i>0;i--){const j=0|Math.random()*(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;};
+  return[...sh(due),...sh(fr)].slice(0,20).map(i=>({i,d}));
+}
+
+// ── study ─────────────────────────────────────────────────────────────────
+let did=null,q=[],qi=0,flipped=false,transitioning=false;
+let sOk=0,sNo=0,sTotal=0;
+
+function startStudy(deckId){
+  did=deckId;q=buildQ(deckId);
+  if(!q.length){showToast('Nenhum card para revisar agora!');return;}
+  qi=0;sOk=0;sNo=0;sTotal=q.length;flipped=false;transitioning=false;
+  $('session-end').style.display='none';
+  ['card-scene','rating-area','flip-hint'].forEach(id=>$(id).style.display='');
+  showScreen('study',null);
+  $('study-deck-name').textContent=allDecks().find(d=>d.id===deckId)?.name||'';
+  loadCard(); // populate content BEFORE showing
+}
+
+function loadCard(){
+  // Called to populate DOM. Does NOT change flip state.
+  const item=q[qi];
+  if(!item)return;
+  const c=item.d.cards[item.i];
+  $('cf-word').textContent=c.f||'';
+  $('cf-reading').textContent=c.r||'';
+  $('cb-word').textContent=c.b||'';
+  $('cb-example').textContent=c.ex||'';
+  $('study-progress').style.width=Math.round(qi/sTotal*100)+'%';
+  $('study-count').textContent=`${qi+1}/${sTotal}`;
+}
+
+function showCard(){
+  // Reset flip (no transition), then load content, then re-enable transition
+  const scene=$('card-scene');
+  scene.classList.add('resetting');
+  scene.classList.remove('flipped');
+  void scene.offsetWidth; // force reflow so remove takes effect immediately
+  scene.classList.remove('resetting');
+  flipped=false;transitioning=false;
+  $('rating-area').classList.remove('show');
+  $('flip-hint').style.opacity='1';
+  loadCard();
+}
+
+function flipCard(){
+  if(flipped||transitioning)return;
+  transitioning=true;
+  $('card-scene').classList.add('flipped');
+  flipped=true;
+  setTimeout(()=>{
+    transitioning=false;
+    $('rating-area').classList.add('show');
+    $('flip-hint').style.opacity='0';
+  },FLIP_MS);
+}
+
+function rate(rating){
+  if(!flipped||transitioning)return;
+  transitioning=true;
+  const item=q[qi];
+  const cd=gc(did,item.i);
+  sm2(cd,rating);
+  if(!stats.dk[did])stats.dk[did]={ok:0,no:0};
+  if(rating>=2){sOk++;cd.tr++;stats.ok++;stats.dk[did].ok++;}
+  else{sNo++;cd.tw++;stats.no++;stats.dk[did].no++;}
+  stats.r[rating]=(stats.r[rating]||0)+1;
+  sv(K.D,prog);sv(K.S,stats);
+  qi++;
+
+  if(qi>=sTotal){
+    // End of session — just end, no card transition needed
+    transitioning=false;
+    endSession();
+    return;
+  }
+
+  // Pre-load NEXT card content into DOM while card is face-up
+  // Then flip back: content is hidden behind backface so user won't see the swap
+  const scene=$('card-scene');
+  // Start flip-back (no transition — instant reset to face-down)
+  scene.classList.add('resetting');
+  scene.classList.remove('flipped');
+  void scene.offsetWidth;
+  scene.classList.remove('resetting');
+  flipped=false;
+  // NOW update content — card is face-down, user sees nothing change
+  loadCard();
+  $('rating-area').classList.remove('show');
+  $('flip-hint').style.opacity='1';
+  transitioning=false;
+}
+
+function endSession(){
+  const today=new Date().toISOString().slice(0,10);
+  const idx=act.findIndex(a=>a.date===today);
+  if(idx>=0)act[idx].c+=sTotal;else act.push({date:today,c:sTotal});
+  if(act.length>7)act=act.slice(-7);sv(K.A,act);
+  ['card-scene','rating-area','flip-hint'].forEach(id=>$(id).style.display='none');
+  $('study-progress').style.width='100%';$('study-count').textContent='';
+  const acc=Math.round(sOk/sTotal*100)||0;
+  $('se-ok').textContent=sOk;$('se-no').textContent=sNo;$('se-ac').textContent=acc+'%';
+  const m=acc>=90?['🏆','Excelente!','Precisão incrível!']:acc>=70?['💪','Muito bem!','Revise os erros.']:acc>=50?['📚','Continue praticando!','Você está progredindo!']:['🔄','Mais prática','A repetição é o segredo.'];
+  $('se-emoji').textContent=m[0];$('se-title').textContent=m[1];$('se-sub').textContent=m[2];
+  $('session-end').style.display='block';
+}
+function restartSession(){startStudy(did);}
+function exitStudy(){showScreen('home',document.querySelector('nav button'));}
+
+// ── home ──────────────────────────────────────────────────────────────────
+function renderHome(){
+  const grid=$('deck-grid');grid.innerHTML='';
+  const now=Date.now(),my=allDecks().filter(d=>instIds.has(d.id));
+  if(!my.length){grid.innerHTML='<p style="color:var(--text2);font-size:.85rem;grid-column:1/-1">Baixe decks na aba "Baixar" para começar.</p>';}
+  my.forEach(d=>{
+    const tot=d.cards.length,lrn=d.cards.filter((_,i)=>(gc(d.id,i).reps||0)>0).length;
+    const ds=stats.dk[d.id]||{ok:0,no:0};
+    const acc=ds.ok+ds.no>0?Math.round(ds.ok/(ds.ok+ds.no)*100):null;
+    const due=d.cards.filter((_,i)=>{const c=gc(d.id,i);return c.reps===0||c.due<=now;}).length;
+    const el=ce('div');el.className='deck-card';
+    el.innerHTML=`${due>0?'<div class="badge-new">'+due+' revisar</div>':''}
+      <div class="deck-icon">${d.icon}</div>
+      <div class="deck-name">${san(d.name)}</div>
+      <div class="deck-meta">${tot} cards${acc!==null?' · '+acc+'%':''}</div>
+      <div class="deck-progress"><div class="deck-progress-fill" style="width:${Math.round(lrn/tot*100)}%"></div></div>`;
+    el.onclick=()=>startStudy(d.id);grid.appendChild(el);
+  });
+  const tdDue=my.reduce((s,d)=>s+d.cards.filter((_,i)=>{const c=gc(d.id,i);return c.reps===0||c.due<=now;}).length,0);
+  $('today-info').innerHTML=tdDue>0
+    ?`<span style="color:var(--accent);font-weight:600">${tdDue} cards</span> aguardando revisão hoje.`
+    :'<span style="color:var(--green);font-weight:600">Tudo em dia!</span> Nenhum card para revisar agora.';
+}
+
+// ── stats ─────────────────────────────────────────────────────────────────
+function renderStats(){
+  $('s-ok').textContent=stats.ok;$('s-no').textContent=stats.no;
+  $('s-rev').textContent=Object.values(prog).reduce((s,dk)=>s+Object.values(dk).reduce((ss,c)=>ss+(c.reps||0),0),0);
+  const days=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],now=new Date(),chart=$('act-chart');
+  chart.innerHTML='';
+  const data=Array.from({length:7},(_,i)=>{const d=new Date(now);d.setDate(d.getDate()-(6-i));const k=d.toISOString().slice(0,10);const e=act.find(a=>a.date===k);return{label:days[d.getDay()],count:e?e.c:0};});
+  const mx=Math.max(...data.map(d=>d.count),1);
+  data.forEach(d=>{const col=ce('div');col.className='bar-col';col.innerHTML=`<div class="bar-val">${d.count||''}</div><div class="bar-wrap"><div class="bar" style="height:${Math.round(d.count/mx*100)}%;background:${d.count?'var(--accent)':'var(--bg3)'}"></div></div><div class="bar-day">${d.label}</div>`;chart.appendChild(col);});
+  const t=stats.ok+stats.no,ap=t>0?Math.round(stats.ok/t*100):0;
+  $('ring-c').style.strokeDashoffset=2*Math.PI*32*(1-ap/100);$('ring-pct').textContent=ap+'%';
+  const rt=stats.r||{},rT=(rt[0]||0)+(rt[1]||0)+(rt[2]||0)+(rt[3]||0)||1;
+  const gp=Math.round(((rt[2]||0)+(rt[3]||0))/rT*100),hp=Math.round((rt[1]||0)/rT*100),wp=Math.round((rt[0]||0)/rT*100);
+  [['g',gp],['h',hp],['w',wp]].forEach(([k,p])=>{$('ab-'+k).style.width=p+'%';$('ap-'+k).textContent=p+'%';});
+  const list=$('dsl');list.innerHTML='';
+  allDecks().filter(d=>instIds.has(d.id)).forEach(d=>{
+    const ds=stats.dk[d.id]||{ok:0,no:0};
+    const acc=ds.ok+ds.no>0?Math.round(ds.ok/(ds.ok+ds.no)*100):0;
+    const el=ce('div');el.className='dsl-item';
+    el.innerHTML=`<div class="dsl-icon">${d.icon}</div><div class="dsl-info"><div class="dsl-name">${san(d.name)}</div><div class="dsl-meta">${ds.ok+ds.no} revisões · ${ds.ok} acertos · ${ds.no} erros</div></div><div class="dsl-acc" style="color:${acc>=70?'var(--green)':acc>=50?'var(--amber)':'var(--red)'}">${acc}%</div>`;
+    list.appendChild(el);
+  });
+}
+
+// ── download ──────────────────────────────────────────────────────────────
+function renderDownload(){
+  const grid=$('dl-grid');grid.innerHTML='';
+  BUILTIN.forEach(d=>{
+    const inst=instIds.has(d.id);
+    const el=ce('div');el.className='dl-card';
+    el.innerHTML=`<div class="dl-top"><div class="dl-icon">${d.icon}</div><span class="dl-badge ${d.id==='en-verbs'?'badge-pop':'badge-free'}">${d.id==='en-verbs'?'Popular':'Grátis'}</span></div>
+      <div class="dl-name">${san(d.name)}</div>
+      <div class="dl-desc">${d.cards.length} cards · SM-2 · exemplos</div>
+      <div class="dl-info"><span>${d.cards.length} cards</span></div>
+      <button class="dl-btn${inst?' inst':''}" ${inst?'disabled':''} onclick="${inst?'':'installDeck(\''+d.id+'\')'}"> ${inst?'✓ Instalado':'Baixar grátis'}</button>`;
+    grid.appendChild(el);
+  });
+  custom.forEach(d=>{
+    const el=ce('div');el.className='dl-card';
+    el.innerHTML=`<div class="dl-top"><div class="dl-icon">${d.icon}</div><span class="dl-badge badge-imp">Importado</span></div>
+      <div class="dl-name">${san(d.name)}</div><div class="dl-desc">${d.cards.length} cards importados</div>
+      <div class="dl-info"><span>${d.cards.length} cards</span></div>
+      <button class="dl-btn" onclick="removeCustom('${d.id}')" style="background:var(--red3);color:var(--red);border:.5px solid var(--red2)">🗑 Remover</button>`;
+    grid.appendChild(el);
+  });
+}
+
+function installDeck(id){
+  instIds.add(id);sv(K.I,[...instIds]);
+  showToast('Deck instalado!');renderDownload();renderHome();
+}
+function removeCustom(id){
+  custom=custom.filter(d=>d.id!==id);instIds.delete(id);
+  sv(K.C,custom);sv(K.I,[...instIds]);renderDownload();renderHome();showToast('Deck removido.');
+}
+function switchTab(name,btn){
+  document.querySelectorAll('.dl-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  $('tab-builtin').style.display=name==='builtin'?'':'none';
+  $('tab-external').style.display=name==='external'?'':'none';
+}
+function switchITab(name,btn){
+  document.querySelectorAll('.import-subtab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  $('itab-paste').style.display=name==='paste'?'':'none';
+  $('itab-url').style.display=name==='url'?'':'none';
+  clearLog();$('preview-box').style.display='none';pending=null;
+}
+
+// ── import paste ──────────────────────────────────────────────────────────
+function importFromPaste(){
+  const raw=$('paste-area').value.trim();
+  clearLog();$('preview-box').style.display='none';pending=null;
+  if(!raw){showToast('Cole o JSON primeiro','err');return;}
+  if(raw.length>MAX_BYTES){addLog('err','Texto muito grande (máx 1 MB)');return;}
+  addLog('info','Validando...');
+  const res=valSchema(raw);res.logs.forEach(l=>addLog(l.t,l.m));
+  if(!res.ok){showToast('JSON inválido','err');return;}
+  pending=res.deck;showPreview(res.deck);
+}
+function clearPaste(){$('paste-area').value='';clearLog();$('preview-box').style.display='none';pending=null;}
+
+// ── import url ────────────────────────────────────────────────────────────
+const PROXIES=[
+  u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+  u=>`https://corsproxy.io/?${encodeURIComponent(u)}`,
+  u=>`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+];
+async function tryFetch(url){
+  for(let i=0;i<PROXIES.length;i++){
+    addLog('info',`Tentando proxy ${i+1}/${PROXIES.length}...`);
+    try{
+      const r=await fetch(PROXIES[i](url),{signal:AbortSignal.timeout(8000)});
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      const t=await r.text();
+      if(!t||t.length<2)throw new Error('Resposta vazia');
+      addLog('ok',`Proxy ${i+1} OK — ${Math.round(t.length/1024)} KB`);
+      return t;
+    }catch(e){addLog('warn',`Proxy ${i+1} falhou: ${e.message}`);}
+  }
+  throw new Error('Todos os proxies falharam. Use "Colar JSON".');
+}
+async function importFromUrl(){
+  const rawUrl=$('import-url').value.trim();
+  clearLog();$('preview-box').style.display='none';pending=null;
+  if(!rawUrl){showToast('Cole uma URL primeiro','err');return;}
+  const uc=valUrl(rawUrl);
+  if(!uc.ok){addLog('err',uc.msg);showToast(uc.msg,'err');return;}
+  addLog('ok','URL válida · HTTPS confirmado');
+  const btn=$('ibtn');btn.disabled=true;btn.textContent='Buscando...';
+  let raw;
+  try{raw=await tryFetch(uc.url);}
+  catch(e){addLog('err',e.message);btn.disabled=false;btn.textContent='Buscar';return;}
+  if(raw.length>MAX_BYTES){addLog('err',`Arquivo grande: ${Math.round(raw.length/1024)} KB (máx 1024 KB). Use "Colar JSON".`);btn.disabled=false;btn.textContent='Buscar';return;}
+  addLog('info','Validando estrutura...');
+  const res=valSchema(raw);res.logs.forEach(l=>addLog(l.t,l.m));
+  btn.disabled=false;btn.textContent='Buscar';
+  if(!res.ok){showToast('Arquivo inválido','err');return;}
+  pending=res.deck;showPreview(res.deck);
+}
+
+function showPreview(deck){
+  $('prev-title').textContent=san(deck.name);
+  $('prev-count').textContent=deck.cards.length+' cards';
+  const pc=$('prev-cards');pc.innerHTML='';
+  deck.cards.slice(0,8).forEach(c=>{const el=ce('div');el.className='pci';el.innerHTML=`<div class="pcif">${san(c.f)}</div><div class="pcib">${san(c.b)}</div>`;pc.appendChild(el);});
+  if(deck.cards.length>8){const el=ce('div');el.className='pci';el.style.color='var(--text3)';el.style.justifyContent='center';el.textContent='+ '+(deck.cards.length-8)+' cards...';pc.appendChild(el);}
+  $('preview-box').style.display='block';
+}
+function confirmImport(){
+  if(!pending)return;
+  // Allow duplicate names — generate unique id already done via Date.now()
+  custom.push(pending);sv(K.C,custom);
+  instIds.add(pending.id);sv(K.I,[...instIds]);
+  pending=null;
+  $('preview-box').style.display='none';
+  $('paste-area').value='';$('import-url').value='';
+  clearLog();showToast('✓ Deck importado!');renderDownload();renderHome();
+}
+function cancelPreview(){$('preview-box').style.display='none';pending=null;}
+
+// ── log ───────────────────────────────────────────────────────────────────
+function addLog(type,msg){
+  const log=$('vlog');log.style.display='block';
+  const l=ce('div');l.className='ll';
+  l.innerHTML=`<span class="l${type}">${{ok:'✓',err:'✗',warn:'⚠',info:'·'}[type]}</span><span>${san(msg)}</span>`;
+  log.appendChild(l);log.scrollTop=log.scrollHeight;
+}
+function clearLog(){const l=$('vlog');l.innerHTML='';l.style.display='none';}
+
+// ── nav / utils ───────────────────────────────────────────────────────────
+const $=id=>document.getElementById(id);
+const ce=t=>document.createElement(t);
+
+function showScreen(name,btn){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  $('screen-'+name).classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(name==='home')renderHome();
+  if(name==='stats')renderStats();
+  if(name==='download')renderDownload();
+}
+let toastT;
+function showToast(msg,type){
+  const t=$('toast');t.textContent=msg;t.className='toast'+(type==='err'?' err':'');
+  t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2800);
+}
+renderHome();
+</script>
