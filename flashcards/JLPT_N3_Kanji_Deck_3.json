@@ -1,0 +1,606 @@
+{
+  "name": "JLPT N3-N2 Kanji (100 Cards)",
+  "icon": "📚",
+  "cards": [
+    {
+      "f": "扱",
+      "b": "manusear, tratar",
+      "r": "あつか(う)",
+      "ex": "取扱(とりあつかい) manuseio"
+    },
+    {
+      "f": "影",
+      "b": "sombra, influência",
+      "r": "エイ / かげ",
+      "ex": "映画(えいが) filme"
+    },
+    {
+      "f": "援",
+      "b": "ajudar, apoiar",
+      "r": "エン",
+      "ex": "応援(おうえん) apoio"
+    },
+    {
+      "f": "沿",
+      "b": "seguir ao longo",
+      "r": "エン / そ(う)",
+      "ex": "沿岸(えんがん) litoral"
+    },
+    {
+      "f": "汚",
+      "b": "sujo",
+      "r": "オ / よご(れる)",
+      "ex": "汚染(おせん) poluição"
+    },
+    {
+      "f": "革",
+      "b": "couro, reforma",
+      "r": "カク / かわ",
+      "ex": "改革(かいかく) reforma"
+    },
+    {
+      "f": "較",
+      "b": "comparar",
+      "r": "カク",
+      "ex": "比較(ひかく) comparação"
+    },
+    {
+      "f": "獲",
+      "b": "obter, capturar",
+      "r": "カク",
+      "ex": "獲得(かくとく) aquisição"
+    },
+    {
+      "f": "額",
+      "b": "quantia",
+      "r": "ガク / ひたい",
+      "ex": "金額(きんがく) quantia"
+    },
+    {
+      "f": "刊",
+      "b": "publicar",
+      "r": "カン",
+      "ex": "刊行(かんこう) publicação"
+    },
+    {
+      "f": "幹",
+      "b": "tronco, principal",
+      "r": "カン / みき",
+      "ex": "幹線(かんせん) linha principal"
+    },
+    {
+      "f": "貴",
+      "b": "precioso",
+      "r": "キ",
+      "ex": "貴重(きちょう) precioso"
+    },
+    {
+      "f": "供",
+      "b": "fornecer",
+      "r": "キョウ / そな(える)",
+      "ex": "供給(きょうきゅう) fornecimento"
+    },
+    {
+      "f": "句",
+      "b": "frase",
+      "r": "ク",
+      "ex": "俳句(はいく) haicai"
+    },
+    {
+      "f": "群",
+      "b": "grupo",
+      "r": "グン / む(れる)",
+      "ex": "群集(ぐんしゅう) multidão"
+    },
+    {
+      "f": "敬",
+      "b": "respeitar",
+      "r": "ケイ",
+      "ex": "尊敬(そんけい) respeito"
+    },
+    {
+      "f": "憲",
+      "b": "constituição",
+      "r": "ケン",
+      "ex": "憲法(けんぽう) constituição"
+    },
+    {
+      "f": "誤",
+      "b": "erro",
+      "r": "ゴ / あやま(る)",
+      "ex": "誤解(ごかい) mal-entendido"
+    },
+    {
+      "f": "皇",
+      "b": "imperial",
+      "r": "コウ",
+      "ex": "天皇(てんのう) imperador"
+    },
+    {
+      "f": "穀",
+      "b": "cereal",
+      "r": "コク",
+      "ex": "穀物(こくもつ) cereal"
+    },
+    {
+      "f": "骨",
+      "b": "osso",
+      "r": "コツ / ほね",
+      "ex": "骨折(こっせつ) fratura"
+    },
+    {
+      "f": "困",
+      "b": "dificuldade",
+      "r": "コン / こま(る)",
+      "ex": "困難(こんなん) dificuldade"
+    },
+    {
+      "f": "裁",
+      "b": "julgar",
+      "r": "サイ / さば(く)",
+      "ex": "裁判(さいばん) julgamento"
+    },
+    {
+      "f": "策",
+      "b": "plano",
+      "r": "サク",
+      "ex": "政策(せいさく) política"
+    },
+    {
+      "f": "至",
+      "b": "chegar a",
+      "r": "シ / いた(る)",
+      "ex": "至急(しきゅう) urgente"
+    },
+    {
+      "f": "姿",
+      "b": "aparência",
+      "r": "シ / すがた",
+      "ex": "姿勢(しせい) postura"
+    },
+    {
+      "f": "飼",
+      "b": "criar animais",
+      "r": "シ / か(う)",
+      "ex": "飼育(しいく) criação"
+    },
+    {
+      "f": "磁",
+      "b": "magnetismo",
+      "r": "ジ",
+      "ex": "磁石(じしゃく) ímã"
+    },
+    {
+      "f": "湿",
+      "b": "úmido",
+      "r": "シツ / しめ(る)",
+      "ex": "湿度(しつど) umidade"
+    },
+    {
+      "f": "捨",
+      "b": "descartar",
+      "r": "シャ / す(てる)",
+      "ex": "投げ捨てる descartar"
+    },
+    {
+      "f": "縮",
+      "b": "encolher",
+      "r": "シュク / ちぢ(む)",
+      "ex": "短縮(たんしゅく) encurtamento"
+    },
+    {
+      "f": "熟",
+      "b": "amadurecer",
+      "r": "ジュク",
+      "ex": "成熟(せいじゅく) maturidade"
+    },
+    {
+      "f": "純",
+      "b": "puro",
+      "r": "ジュン",
+      "ex": "純粋(じゅんすい) puro"
+    },
+    {
+      "f": "順",
+      "b": "ordem",
+      "r": "ジュン",
+      "ex": "順番(じゅんばん) ordem"
+    },
+    {
+      "f": "処",
+      "b": "lidar com",
+      "r": "ショ",
+      "ex": "処理(しょり) processamento"
+    },
+    {
+      "f": "署",
+      "b": "delegacia, assinatura",
+      "r": "ショ",
+      "ex": "署名(しょめい) assinatura"
+    },
+    {
+      "f": "諸",
+      "b": "vários",
+      "r": "ショ",
+      "ex": "諸国(しょこく) vários países"
+    },
+    {
+      "f": "承",
+      "b": "aceitar",
+      "r": "ショウ / うけたまわ(る)",
+      "ex": "承知(しょうち) ciente"
+    },
+    {
+      "f": "詳",
+      "b": "detalhado",
+      "r": "ショウ / くわ(しい)",
+      "ex": "詳細(しょうさい) detalhes"
+    },
+    {
+      "f": "障",
+      "b": "obstáculo",
+      "r": "ショウ / さわ(る)",
+      "ex": "障害(しょうがい) obstáculo"
+    },
+    {
+      "f": "蒸",
+      "b": "vapor",
+      "r": "ジョウ / む(す)",
+      "ex": "蒸気(じょうき) vapor"
+    },
+    {
+      "f": "針",
+      "b": "agulha",
+      "r": "シン / はり",
+      "ex": "方針(ほうしん) diretriz"
+    },
+    {
+      "f": "仁",
+      "b": "benevolência",
+      "r": "ジン",
+      "ex": "仁愛(じんあい) benevolência"
+    },
+    {
+      "f": "垂",
+      "b": "pendurar",
+      "r": "スイ / た(れる)",
+      "ex": "垂直(すいちょく) vertical"
+    },
+    {
+      "f": "寸",
+      "b": "polegada",
+      "r": "スン",
+      "ex": "寸法(すんぽう) medida"
+    },
+    {
+      "f": "盛",
+      "b": "prosperar",
+      "r": "セイ / も(る)",
+      "ex": "繁盛(はんじょう) prosperidade"
+    },
+    {
+      "f": "聖",
+      "b": "sagrado",
+      "r": "セイ",
+      "ex": "聖人(せいじん) santo"
+    },
+    {
+      "f": "誠",
+      "b": "sinceridade",
+      "r": "セイ / まこと",
+      "ex": "誠実(せいじつ) sincero"
+    },
+    {
+      "f": "宣",
+      "b": "declarar",
+      "r": "セン",
+      "ex": "宣言(せんげん) declaração"
+    },
+    {
+      "f": "専",
+      "b": "especializar",
+      "r": "セン",
+      "ex": "専門(せんもん) especialidade"
+    },
+    {
+      "f": "泉",
+      "b": "fonte",
+      "r": "セン / いずみ",
+      "ex": "温泉(おんせん) fonte termal"
+    },
+    {
+      "f": "洗",
+      "b": "lavar",
+      "r": "セン / あら(う)",
+      "ex": "洗濯(せんたく) lavagem"
+    },
+    {
+      "f": "善",
+      "b": "bondade",
+      "r": "ゼン",
+      "ex": "改善(かいぜん) melhoria"
+    },
+    {
+      "f": "創",
+      "b": "criar",
+      "r": "ソウ / つく(る)",
+      "ex": "創造(そうぞう) criação"
+    },
+    {
+      "f": "操",
+      "b": "operar",
+      "r": "ソウ / あやつ(る)",
+      "ex": "操作(そうさ) operação"
+    },
+    {
+      "f": "臓",
+      "b": "órgão interno",
+      "r": "ゾウ",
+      "ex": "心臓(しんぞう) coração"
+    },
+    {
+      "f": "尊",
+      "b": "respeitar",
+      "r": "ソン / たっと(い)",
+      "ex": "尊重(そんちょう) respeito"
+    },
+    {
+      "f": "存",
+      "b": "existir",
+      "r": "ソン",
+      "ex": "存在(そんざい) existência"
+    },
+    {
+      "f": "宅",
+      "b": "residência",
+      "r": "タク",
+      "ex": "自宅(じたく) residência"
+    },
+    {
+      "f": "担",
+      "b": "carregar responsabilidade",
+      "r": "タン / にな(う)",
+      "ex": "担当(たんとう) encarregado"
+    },
+    {
+      "f": "探",
+      "b": "procurar",
+      "r": "タン / さが(す)",
+      "ex": "探検(たんけん) exploração"
+    },
+    {
+      "f": "誕",
+      "b": "nascimento",
+      "r": "タン",
+      "ex": "誕生(たんじょう) nascimento"
+    },
+    {
+      "f": "暖",
+      "b": "quente",
+      "r": "ダン / あたた(かい)",
+      "ex": "暖房(だんぼう) aquecimento"
+    },
+    {
+      "f": "段",
+      "b": "degrau",
+      "r": "ダン",
+      "ex": "階段(かいだん) escada"
+    },
+    {
+      "f": "値",
+      "b": "valor",
+      "r": "チ / ね",
+      "ex": "価値(かち) valor"
+    },
+    {
+      "f": "宙",
+      "b": "espaço",
+      "r": "チュウ",
+      "ex": "宇宙(うちゅう) universo"
+    },
+    {
+      "f": "忠",
+      "b": "lealdade",
+      "r": "チュウ",
+      "ex": "忠実(ちゅうじつ) fiel"
+    },
+    {
+      "f": "著",
+      "b": "autor, notável",
+      "r": "チョ / いちじる(しい)",
+      "ex": "著者(ちょしゃ) autor"
+    },
+    {
+      "f": "庁",
+      "b": "agência governamental",
+      "r": "チョウ",
+      "ex": "気象庁(きしょうちょう) agência meteorológica"
+    },
+    {
+      "f": "頂",
+      "b": "topo",
+      "r": "チョウ / いただ(く)",
+      "ex": "頂上(ちょうじょう) cume"
+    },
+    {
+      "f": "潮",
+      "b": "maré",
+      "r": "チョウ / しお",
+      "ex": "満潮(まんちょう) maré alta"
+    },
+    {
+      "f": "賃",
+      "b": "aluguel",
+      "r": "チン",
+      "ex": "家賃(やちん) aluguel"
+    },
+    {
+      "f": "痛",
+      "b": "dor",
+      "r": "ツウ / いた(い)",
+      "ex": "頭痛(ずつう) dor de cabeça"
+    },
+    {
+      "f": "展",
+      "b": "expandir",
+      "r": "テン",
+      "ex": "発展(はってん) desenvolvimento"
+    },
+    {
+      "f": "討",
+      "b": "debater",
+      "r": "トウ",
+      "ex": "検討(けんとう) consideração"
+    },
+    {
+      "f": "党",
+      "b": "partido",
+      "r": "トウ",
+      "ex": "政党(せいとう) partido político"
+    },
+    {
+      "f": "糖",
+      "b": "açúcar",
+      "r": "トウ",
+      "ex": "糖分(とうぶん) açúcar"
+    },
+    {
+      "f": "届",
+      "b": "entregar",
+      "r": "とど(く)",
+      "ex": "届ける(とどける) entregar"
+    },
+    {
+      "f": "難",
+      "b": "difícil",
+      "r": "ナン / むずか(しい)",
+      "ex": "困難(こんなん) dificuldade"
+    },
+    {
+      "f": "認",
+      "b": "reconhecer",
+      "r": "ニン / みと(める)",
+      "ex": "認識(にんしき) reconhecimento"
+    },
+    {
+      "f": "納",
+      "b": "pagar, entregar",
+      "r": "ノウ / おさ(める)",
+      "ex": "納税(のうぜい) imposto"
+    },
+    {
+      "f": "派",
+      "b": "facção",
+      "r": "ハ",
+      "ex": "派手(はで) chamativo"
+    },
+    {
+      "f": "拝",
+      "b": "reverenciar",
+      "r": "ハイ",
+      "ex": "拝見(はいけん) ver humildemente"
+    },
+    {
+      "f": "背",
+      "b": "costas",
+      "r": "ハイ / せ",
+      "ex": "背中(せなか) costas"
+    },
+    {
+      "f": "肺",
+      "b": "pulmão",
+      "r": "ハイ",
+      "ex": "肺炎(はいえん) pneumonia"
+    },
+    {
+      "f": "俳",
+      "b": "haicai",
+      "r": "ハイ",
+      "ex": "俳優(はいゆう) ator"
+    },
+    {
+      "f": "班",
+      "b": "grupo",
+      "r": "ハン",
+      "ex": "班長(はんちょう) líder de grupo"
+    },
+    {
+      "f": "晩",
+      "b": "noite",
+      "r": "バン",
+      "ex": "昨晩(さくばん) noite passada"
+    },
+    {
+      "f": "否",
+      "b": "negar",
+      "r": "ヒ",
+      "ex": "否定(ひてい) negação"
+    },
+    {
+      "f": "批",
+      "b": "criticar",
+      "r": "ヒ",
+      "ex": "批判(ひはん) crítica"
+    },
+    {
+      "f": "秘",
+      "b": "segredo",
+      "r": "ヒ",
+      "ex": "秘密(ひみつ) segredo"
+    },
+    {
+      "f": "腹",
+      "b": "abdômen",
+      "r": "フク / はら",
+      "ex": "腹痛(ふくつう) dor abdominal"
+    },
+    {
+      "f": "奮",
+      "b": "esforçar-se",
+      "r": "フン",
+      "ex": "興奮(こうふん) excitação"
+    },
+    {
+      "f": "閉",
+      "b": "fechar",
+      "r": "ヘイ / し(める)",
+      "ex": "閉店(へいてん) fechamento"
+    },
+    {
+      "f": "暮",
+      "b": "anoitecer",
+      "r": "ボ / く(れる)",
+      "ex": "暮らす(くらす) viver"
+    },
+    {
+      "f": "宝",
+      "b": "tesouro",
+      "r": "ホウ / たから",
+      "ex": "宝石(ほうせき) joia"
+    },
+    {
+      "f": "訪",
+      "b": "visitar",
+      "r": "ホウ / おとず(れる)",
+      "ex": "訪問(ほうもん) visita"
+    },
+    {
+      "f": "亡",
+      "b": "morrer",
+      "r": "ボウ / なく(なる)",
+      "ex": "死亡(しぼう) morte"
+    },
+    {
+      "f": "棒",
+      "b": "bastão",
+      "r": "ボウ",
+      "ex": "鉄棒(てつぼう) barra fixa"
+    },
+    {
+      "f": "枚",
+      "b": "folha, contador",
+      "r": "マイ",
+      "ex": "一枚(いちまい) uma folha"
+    }
+  ]
+}
