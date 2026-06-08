@@ -10,9 +10,9 @@
     },
     {
       "f": "影",
-      "b": "sombra, influência",
+      "b": "sombra, silhueta",
       "r": "エイ / かげ",
-      "ex": "映画(えいが) filme"
+      "ex": "影響(えいきょう) influência"
     },
     {
       "f": "援",
@@ -49,12 +49,6 @@
       "b": "obter, capturar",
       "r": "カク",
       "ex": "獲得(かくとく) aquisição"
-    },
-    {
-      "f": "額",
-      "b": "quantia",
-      "r": "ガク / ひたい",
-      "ex": "金額(きんがく) quantia"
     },
     {
       "f": "刊",
@@ -165,12 +159,6 @@
       "ex": "飼育(しいく) criação"
     },
     {
-      "f": "磁",
-      "b": "magnetismo",
-      "r": "ジ",
-      "ex": "磁石(じしゃく) ímã"
-    },
-    {
       "f": "湿",
       "b": "úmido",
       "r": "シツ / しめ(る)",
@@ -237,12 +225,6 @@
       "ex": "詳細(しょうさい) detalhes"
     },
     {
-      "f": "障",
-      "b": "obstáculo",
-      "r": "ショウ / さわ(る)",
-      "ex": "障害(しょうがい) obstáculo"
-    },
-    {
       "f": "蒸",
       "b": "vapor",
       "r": "ジョウ / む(す)",
@@ -303,12 +285,6 @@
       "ex": "専門(せんもん) especialidade"
     },
     {
-      "f": "泉",
-      "b": "fonte",
-      "r": "セン / いずみ",
-      "ex": "温泉(おんせん) fonte termal"
-    },
-    {
       "f": "洗",
       "b": "lavar",
       "r": "セン / あら(う)",
@@ -351,12 +327,6 @@
       "ex": "存在(そんざい) existência"
     },
     {
-      "f": "宅",
-      "b": "residência",
-      "r": "タク",
-      "ex": "自宅(じたく) residência"
-    },
-    {
       "f": "担",
       "b": "carregar responsabilidade",
       "r": "タン / にな(う)",
@@ -385,12 +355,6 @@
       "b": "degrau",
       "r": "ダン",
       "ex": "階段(かいだん) escada"
-    },
-    {
-      "f": "値",
-      "b": "valor",
-      "r": "チ / ね",
-      "ex": "価値(かち) valor"
     },
     {
       "f": "宙",
@@ -447,12 +411,6 @@
       "ex": "発展(はってん) desenvolvimento"
     },
     {
-      "f": "討",
-      "b": "debater",
-      "r": "トウ",
-      "ex": "検討(けんとう) consideração"
-    },
-    {
       "f": "党",
       "b": "partido",
       "r": "トウ",
@@ -463,24 +421,6 @@
       "b": "açúcar",
       "r": "トウ",
       "ex": "糖分(とうぶん) açúcar"
-    },
-    {
-      "f": "届",
-      "b": "entregar",
-      "r": "とど(く)",
-      "ex": "届ける(とどける) entregar"
-    },
-    {
-      "f": "難",
-      "b": "difícil",
-      "r": "ナン / むずか(しい)",
-      "ex": "困難(こんなん) dificuldade"
-    },
-    {
-      "f": "認",
-      "b": "reconhecer",
-      "r": "ニン / みと(める)",
-      "ex": "認識(にんしき) reconhecimento"
     },
     {
       "f": "納",
@@ -579,28 +519,96 @@
       "ex": "宝石(ほうせき) joia"
     },
     {
-      "f": "訪",
-      "b": "visitar",
-      "r": "ホウ / おとず(れる)",
-      "ex": "訪問(ほうもん) visita"
-    },
-    {
       "f": "亡",
       "b": "morrer",
       "r": "ボウ / なく(なる)",
       "ex": "死亡(しぼう) morte"
     },
     {
-      "f": "棒",
-      "b": "bastão",
-      "r": "ボウ",
-      "ex": "鉄棒(てつぼう) barra fixa"
-    },
-    {
       "f": "枚",
       "b": "folha, contador",
       "r": "マイ",
       "ex": "一枚(いちまい) uma folha"
-    }
+    },
+    [
+  {
+    "f": "政",
+    "b": "governo, política",
+    "r": "セイ / まつりごと",
+    "ex": "政治(せいじ) política"
+  },
+  {
+    "f": "民",
+    "b": "povo, cidadãos",
+    "r": "ミン / たみ",
+    "ex": "国民(こくみん) população, cidadãos"
+  },
+  {
+    "f": "対",
+    "b": "oposição, contra, par",
+    "r": "タイ / たい(する)",
+    "ex": "対策(たいさく) medida, contramedida"
+  },
+  {
+    "f": "部",
+    "b": "seção, departamento",
+    "r": "ブ",
+    "ex": "部分(ぶぶん) parte, porção"
+  },
+  {
+    "f": "内",
+    "b": "dentro, interior",
+    "r": "ナイ / うち",
+    "ex": "案内(あんない) orientação, guia"
+  },
+  {
+    "f": "戦",
+    "b": "guerra, batalha",
+    "r": "セン / たたか(う)",
+    "ex": "戦争(せんそう) guerra"
+  },
+  {
+    "f": "約",
+    "b": "promessa, aproximadamente",
+    "r": "ヤク",
+    "ex": "約束(やくそく) promessa"
+  },
+  {
+    "f": "首",
+    "b": "pescoço, cabeça",
+    "r": "シュ / くび",
+    "ex": "首都(しゅと) capital"
+  },
+  {
+    "f": "治",
+    "b": "governar, curar",
+    "r": "チ / ジ / おさ(める) / なお(る)",
+    "ex": "政治(せいじ) política"
+  },
+  {
+    "f": "期",
+    "b": "período, prazo",
+    "r": "キ",
+    "ex": "期待(きたい) expectativa"
+  },
+  {
+    "f": "権",
+    "b": "direito, autoridade, poder",
+    "r": "ケン / ゴン",
+    "ex": "人権(じんけん) direitos humanos"
+  },
+  {
+    "f": "産",
+    "b": "produzir, dar à luz",
+    "r": "サン / う(む)",
+    "ex": "産業(さんぎょう) indústria"
+  },
+  {
+    "f": "得",
+    "b": "obter, ganhar",
+    "r": "トク / え(る)",
+    "ex": "取得(しゅとく) obtenção"
+  }
+]
   ]
 }
