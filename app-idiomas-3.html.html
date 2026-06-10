@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcards Pro - Idiomas</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #f0f4f8;
+            --primary: #3182ce;
+            --primary-hover: #2b6cb0;
+            --text-main: #2d3748;
+            --card-bg: #ffffff;
+            --success: #38a169;
+            --danger: #e53e3e;
+            --warning: #dd6b20;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+
+        h1, h2, h3 { text-align: center; margin-bottom: 10px; }
+        
+        .top-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button, .btn-label {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.2s;
+            text-align: center;
+        }
+        button:hover, .btn-label:hover { background-color: var(--primary-hover); }
+        input[type="file"] { display: none; }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .stat-box h3 { margin: 0 0 5px 0; font-size: 12px; color: #718096; text-transform: uppercase; }
+        .stat-box p { margin: 0; font-size: 24px; font-weight: bold; color: var(--primary); }
+        
+        .streak { color: #d69e2e !important; }
+
+        .chart-container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+
+        /* Paineis e Formulários */
+        .panel {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            display: none;
+        }
+        .panel.active { display: block; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        /* Estudo */
+        .flashcard {
+            background: var(--card-bg);
+            width: 100%;
+            min-height: 250px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            box-sizing: border-box;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .card-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+        .icon-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: #cbd5e0; padding: 5px; }
+        .icon-btn.active-fav { color: #ecc94b; }
+        .icon-btn.active-hard { color: var(--danger); }
+        .icon-btn:hover { transform: scale(1.1); }
+
+        .card-content { font-size: 28px; font-weight: bold; margin-bottom: 15px; }
+        .answer-area { display: none; width: 100%; text-align: center; }
+        .answer-text { font-size: 22px; color: var(--primary); font-weight: bold; }
+        
+        .action-buttons { display: none; gap: 10px; width: 100%; justify-content: center; }
+        .btn-wrong { background-color: var(--danger); }
+        .btn-correct { background-color: var(--success); }
+
+        /* Lista Editor */
+        .card-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        .card-list-item:last-child { border-bottom: none; }
+        .tag { font-size: 10px; padding: 2px 6px; border-radius: 10px; color: white; margin-left: 5px; }
+        .tag-fav { background: #ecc94b; }
+        .tag-hard { background: var(--danger); }
+
+    </style>
+</head>
+<body>
+
+    <h1>🚀 Flashcards Pro</h1>
+
+    <div class="top-bar">
+        <button onclick="showPanel('panel-study')">📖 Estudar</button>
+        <button onclick="showPanel('panel-editor')">✏️ Editor de Cards</button>
+        <button onclick="showPanel('panel-settings')">⚙️ Configurações</button>
+        <label class="btn-label">📥 Importar JSON <input type="file" accept=".json" onchange="importDeck(event)"></label>
+        <button onclick="exportDeck()">📤 Exportar JSON</button>
+    </div>
+
+    <div class="dashboard">
+        <div class="stat-box"><h3>🔥 Streak</h3><p class="streak" id="stat-streak">0 dias</p></div>
+        <div class="stat-box"><h3>Pendentes</h3><p id="stat-pending">0</p></div>
+        <div class="stat-box"><h3>Total de Cards</h3><p id="stat-total">0</p></div>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="progressChart" height="80"></canvas>
+    </div>
+
+    <div class="panel" id="panel-settings">
+        <h2>Configurações</h2>
+        <div class="form-group">
+            <label>Cor de Fundo da Página</label>
+            <input type="color" id="set-bg-color" onchange="updateSettings()">
+        </div>
+        <div class="form-group">
+            <label>Limite de Cards por Sessão</label>
+            <input type="number" id="set-session-limit" min="1" max="100" onchange="updateSettings()">
+        </div>
+        <h3>Atalhos de Teclado</h3>
+        <div class="form-group">
+            <label>Virar Card (Espaço por padrão)</label>
+            <input type="text" id="set-key-flip" readonly value="Space" onclick="captureKey('set-key-flip')">
+        </div>
+        <div class="form-group">
+            <label>Acertei (Seta Direita por padrão)</label>
+            <input type="text" id="set-key-correct" readonly value="ArrowRight" onclick="captureKey('set-key-correct')">
+        </div>
+        <div class="form-group">
+            <label>Errei (Seta Esquerda por padrão)</label>
+            <input type="text" id="set-key-wrong" readonly value="ArrowLeft" onclick="captureKey('set-key-wrong')">
+        </div>
+    </div>
+
+    <div class="panel" id="panel-editor">
+        <h2>Criar/Editar Card</h2>
+        <form id="card-form" onsubmit="saveCard(event)">
+            <input type="hidden" id="edit-id">
+            <div class="form-group">
+                <label>Frente (Texto de pergunta)</label>
+                <input type="text" id="input-front" required>
+            </div>
+            <div class="form-group">
+                <label>Verso (Tradução/Resposta)</label>
+                <input type="text" id="input-back" required>
+            </div>
+            <button type="submit" style="width:100%; margin-bottom: 20px;">Salvar Card</button>
+        </form>
+        <h3>Seu Deck</h3>
+        <div id="deck-list"></div>
+    </div>
+
+    <div class="panel active" id="panel-study">
+        <div id="study-setup">
+            <h2>Iniciar Sessão</h2>
+            <div class="form-group">
+                <label>O que estudar hoje?</label>
+                <select id="study-mode">
+                    <option value="all">Todos os Pendentes</option>
+                    <option value="hard">Apenas marcados como "Difícil"</option>
+                    <option value="favorites">Apenas "Favoritos"</option>
+                </select>
+            </div>
+            <button onclick="startStudy()" style="width:100%; font-size:18px;">Come

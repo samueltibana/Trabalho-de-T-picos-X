@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcards Pro - Idiomas</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #f0f4f8;
+            --primary: #3182ce;
+            --primary-hover: #2b6cb0;
+            --text-main: #2d3748;
+            --card-bg: #ffffff;
+            --success: #38a169;
+            --danger: #e53e3e;
+            --warning: #dd6b20;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+
+        h1, h2, h3 { text-align: center; margin-bottom: 10px; }
+        
+        .top-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button, .btn-label {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.2s;
+            text-align: center;
+        }
+        button:hover, .btn-label:hover { background-color: var(--primary-hover); }
+        input[type="file"] { display: none; }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .stat-box h3 { margin: 0 0 5px 0; font-size: 12px; color: #718096; text-transform: uppercase; }
+        .stat-box p { margin: 0; font-size: 24px; font-weight: bold; color: var(--primary); }
+        
+        .streak { color: #d69e2e !important; }
+
+        .chart-container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+
+        /* Paineis e Formulários */
+        .panel {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            display: none; /* Controlado via JS */
+        }
+        .panel.active { display: block; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        /* Estudo */
+        .flashcard {
+            background: var(--card-bg);
+            width: 100%;
+            min-height: 250px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            box-sizing: border-box;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .card-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+        .icon-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: #cbd5e0; padding: 5px; }
+        .icon-btn.active-fav { color: #ecc94b; }
+        .icon-btn.active-hard { color: var(--danger); }
+        .icon-btn:hover { transform: scale(1.1); }
+
+        .card-content { font-size: 28px; font-weight: bold; margin-bottom: 15px; }
+        .answer-area { display: none; width: 100%; text-align: center; }
+        .answer-text { font-size: 22px; color: var(--primary); font-weight: bold; }
+        
+        .action-buttons { display: none; gap: 10px; width: 100%; justify-content: center; }
+        .btn-wrong { background-color: var(--danger); }
+        .btn-correct { background-color: var(--success); }
+
+        /* Lista Editor */
+        .card-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        .card-list-item:last-child { border-bottom: none; }
+        .tag { font-size: 10px; padding: 2px 6px; border-radius: 10px; color: white; margin-left: 5px; }
+        .tag-fav { background: #ecc94b; }
+        .tag-hard { background: var(--danger); }
+
+    </style>
+</head>
+<body>
+
+    <h1>🚀 Flashcards Pro</h1>
+
+    <div class="top-bar">
+        <button onclick="showPanel('panel-study')">📖 Estudar</button>
+        <button onclick="showPanel('panel-editor')">✏️ Editor de Cards</button>
+        <button onclick="showPanel('panel-settings')">⚙️ Configurações</button>
+        <label class="btn-label">📥 Importar JSON <input type="file" accept=".json" onchange="importDeck(event)"></label>
+        <button onclick="exportDeck()">📤 Exportar JSON</button>
+    </div>
+
+    <div class="dashboard">
+        <div class="stat-box"><h3>🔥 Streak</h3><p class="streak" id="stat-streak">0 dias</p></div>
+        <div class="stat-box"><h3>Pendentes</h3><p id="stat-pending">0</p></div>
+        <div class="stat-box"><h3>Total de Cards</h3><p id="stat-total">0</p></div>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="progressChart" height="80"></canvas>
+    </div>
+
+    <div class="panel" id="panel-settings">
+        <h2>Configurações</h2>
+        <div class="form-group">
+            <label>Cor de Fundo da Página</label>
+            <input type="color" id="set-bg-color" onchange="updateSettings()">
+        </div>
+        <div class="form-group">
+            <label>Limite de Cards por Sessão</label>
+            <input type="number" id="set-session-limit" min="1" max="100" onchange="updateSettings()">
+        </div>
+        <h3>Atalhos de Teclado</h3>
+        <div class="form-group">
+            <label>Virar Card / Pronúncia (Espaço por padrão)</label>
+            <input type="text" id="set-key-flip" readonly value="Space" onclick="captureKey('set-key-flip')">
+        </div>
+        <div class="form-group">
+            <label>Acertei (Seta Direita por padrão)</label>
+            <input type="text" id="set-key-correct" readonly value="ArrowRight" onclick="captureKey('set-key-correct')">
+        </div>
+        <div class="form-group">
+            <label>Errei (Seta Esquerda por padrão)</label>
+            <input type="text" id="set-key-wrong" readonly value="ArrowLeft" onclick="captureKey('set-key-wrong')">
+        </div>
+    </div>
+
+    <div class="panel" id="panel-editor">
+        <h2>Criar/Editar Card</h2>
+        <form id="card-form" onsubmit="saveCard(event)">
+            <input type="hidden" id="edit-id">
+            <div class="form-group">
+                <label>Frente (Texto nativo)</label>
+                <input type="text" id="input-front" required>
+            </div>
+            <div class="form-group">
+                <label>Verso (Tradução/Resposta)</label>
+                <input type="text" id="input-back" required>
+            </div>
+            <button type="submit" style="width:100%; margin-bottom: 20px;">Salvar Card</button>
+        </form>
+        <h3>Seu Deck</h3>
+        <div id="deck-list"></div>
+    </div>
+
+    <div class="panel active" id="panel-study">
+        <div id="study-setup">
+            <h2>Iniciar Sessão</h2>
+            <div class="form-group">
+                <label>O que estudar hoje?</label>
+                <select id="study-mode">
+                    <option value="all">Todos os Pendentes</option>
+                    <option value="hard">Apenas marcados como "Difícil"</option>
+                    <option value="favorites">Apenas "Favoritos"</option>
+                </select>
+            </div>
+            <button onclick="startStudy()" style="width:100%; font-size:18px;">Começar</button>
+        </div>
+
+        <div id="study-area" style="display: none;">
+            <div class="flashcard" onclick="flipCard()">
+                <div class="card-actions">
+                    <button class="icon-btn" id="btn-audio" title="Ouvir Pronúncia" onclick="playAudio(event)">🔊</button>
+                    <button class="icon-btn" id="btn-fav" title="Favoritar" onclick="toggleTag(event, 'isFavorite')">⭐</button>
+                    <button class="icon-btn" id="btn-hard" title="Marcar como Difícil" onclick="toggleTag(event, 'isHard')">⚠️</button>
+                </div>
+                <div class="card-content" id="card-front"></div>
+                <div class="answer-area" id="answer-area">
+                    <hr style="width: 80%; border: 0; border-top: 1px solid var(--border); margin: 15px auto;">
+                    <div class="answer-text" id="card-back"></div>
+                </div>
+                <div style="margin-top: 20px; font-size: 12px; color: #a0aec0;" id="click-hint">Pressione [Espaço] ou Clique para virar</div>
+            </div>
+
+            <div class="action-buttons" id="action-buttons">
+                <button class="btn-wrong" onclick="answerCard(false)">Errei</button>
+                <button class="btn-correct" onclick="answerCard(true)">Acertei</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Estado Global da Aplicação ---
+        let deck = [];
+        let historyStats = {}; // { 'YYYY-MM-DD': { hits: 0, misses: 0 } }
+        let appSettings = {
+            bgColor: '#f0f4f8',
+            sessionLimit: 20,
+            keys: { flip: 'Space', correct: 'ArrowRight', wrong: 'ArrowLeft' },
+            streak: 0,
+            lastStudyDate: null
+        };
+        
+        let dueCards = [];
+        let currentCard = null;
+        let chartInstance = null;
+        const intervals = [1, 3, 7, 14, 30, 60, 90];
+
+        // --- Inicialização ---
+        window.onload = () => {
+            loadData();
+            applySettings();
+            updateDashboard();
+            renderChart();
+            renderDeckList();
+            checkStreak();
+            
+            // Listener Global de Teclado
+            document.addEventListener('keydown', handleKeyPress);
+        };
+
+        // --- Armazenamento Local ---
+        function loadData() {
+            deck = JSON.parse(localStorage.getItem('pro_deck')) || [];
+            historyStats = JSON.parse(localStorage.getItem('pro_history')) || {};
+            const savedSettings = JSON.parse(localStorage.getItem('pro_settings'));
+            if(savedSettings) appSettings = {...appSettings, ...savedSettings};
+        }
+
+        function saveData() {
+            localStorage.setItem('pro_deck', JSON.stringify(deck));
+            localStorage.setItem('pro_history', JSON.stringify(historyStats));
+            localStorage.setItem('pro_settings', JSON.stringify(appSettings));
+            updateDashboard();
+        }
+
+        // --- Navegação e UI ---
+        function showPanel(panelId) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.getElementById(panelId).classList.add('active');
+            if(panelId === 'panel-editor') renderDeckList();
+        }
+
+        function updateDashboard() {
+            document.getElementById('stat-total').innerText = deck.length;
+            document.getElementById('stat-streak').innerText = appSettings.streak + " dias";
+            const now = Date.now();
+            document.getElementById('stat-pending').innerText = deck.filter(c => c.nextReview <= now).length;
+        }
+
+        // --- Configurações e Atalhos ---
+        function applySettings() {
+            document.documentElement.style.setProperty('--bg-color', appSettings.bgColor);
+            document.getElementById('set-bg-color').value = appSettings.bgColor;
+            document.getElementById('set-session-limit').value = appSettings.sessionLimit;
+            document.getElementById('set-key-flip').value = appSettings.keys.flip;
+            document.getElementById('set-key-correct').value = appSettings.keys.correct;
+            document.getElementById('set-key-wrong').value = appSettings.keys.wrong;
+        }
+
+        function updateSettings() {
+            appSettings.bgColor = document.getElementById('set-bg-color').value;
+            appSettings.sessionLimit = parseInt(document.getElementById('set-session-limit').value);
+            document.documentElement.style.setProperty('--bg-color', appSettings.bgColor);
+            saveData();
+        }
+
+        function captureKey(inputId) {
+            const input = document.getElementById(inputId);
+            input.value = "Pressione uma tecla...";
+            const handler = (e) => {
+                e.preventDefault();
+                input.value = e.code;
+                if(inputId === 'set-key-flip') appSettings.keys.flip = e.code;
+                if(inputId === 'set-key-correct') appSettings.keys.correct = e.code;
+                if(inputId === 'set-key-wrong') appSettings.keys.wrong = e.code;
+                saveData();
+                document.removeEventListener('keydown', handler);
+            };
+            document.addEventListener('keydown', handler);
+        }
+
+        function handleKeyPress(e) {
+            // Não ativa atalhos se estiver digitando em inputs
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+            if (document.getElementById('study-area').style.display === 'block') {
+                e.preventDefault();
+                if (e.code === appSettings.keys.flip) flipCard();
+                else if (e.code === appSettings.keys.correct && document.getElementById('answer-area').style.display === 'block') answerCard(true);
+                else if (e.code === appSettings.keys.wrong && document.getElementById('answer-area').style.display === 'block') answerCard(false);
+            }
+        }
+
+        // --- Áudio e Sons (Web APIs Nativas) ---
+        function playAudio(e) {
+            if(e) e.stopPropagation(); // Evita virar o card ao clicar no botão
+            if(!currentCard) return;
+            const msg = new SpeechSynthesisUtterance(currentCard.front);
+            // msg.lang = 'en-US'; // Descomente e ajuste se quiser forçar idioma específico
+            window.speechSynthesis.speak(msg);
+        }
+
+        function playFlipSound() {
+            // Som sintetizado nativo e leve
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if(!AudioContext) return;
+            const audioCtx = new AudioContext();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(600, audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime); // Volume baixo
+            oscillator.start();
+            gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.05);
+            oscillator.stop(audioCtx.currentTime + 0.05);
+        }
+
+        // --- Streak de Dias ---
+        function getTodayStr() { return new Date().toISOString().split('T')[0]; }
+        
+        function checkStreak() {
+            const today = getTodayStr();
+            if (appSettings.lastStudyDate !== today) {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayStr = yesterday.toISOString().split('T')[0];
+                
+                if (appSettings.lastStudyDate !== yesterdayStr && appSettings.lastStudyDate !== null) {
+                    appSettings.streak = 0; // Quebrou a ofensiva
+                }
+            }
+            saveData();
+        }
+
+        function registerStudyDay() {
+            const today = getTodayStr();
+            if (appSettings.lastStudyDate !== today) {
+                appSettings.streak++;
+                appSettings.lastStudyDate = today;
+                saveData();
+            }
+        }
+
+        // --- Lógica de Estudo ---
+        function startStudy() {
+            const mode = document.getElementById('study-mode').value;
+            const now = Date.now();
+            
+            let pool = deck.filter(c => c.nextReview <= now);
+            if(mode === 'favorites') pool = pool.filter(c => c.isFavorite);
+            if(mode === 'hard') pool = pool.filter(c => c.isHard);
+
+            // Limite de sessão
+            dueCards = pool.slice(0, appSettings.sessionLimit);
+
+            if (dueCards.length === 0) {
+                alert("Nenhum card disponível para este filtro hoje!");
+                return;
+            }
+
+            document.getElementById('study-setup').style.display = 'none';
+            document.getElementById('study-area').style.display = 'block';
+            showNextCard();
+        }
+
+        function showNextCard() {
+            if (dueCards.length === 0) {
+                document.getElementById('study-setup').style.display = 'block';
+                document.getElementById('study-area').style.display = 'none';
+                renderChart(); // Atualiza o gráfico após a sessão
+                alert("Sessão finalizada!");
+                return;
+            }
+
+            currentCard = dueCards[0];
+            document.getElementById('card-front').innerText = currentCard.front;
+            document.getElementById('card-back').innerText = currentCard.back;
+            
+            // Atualiza botões visuais
+            document.getElementById('btn-fav').classList.toggle('active-fav', currentCard.isFavorite || false);
+            document.getElementById('btn-hard').classList.toggle('active-hard', currentCard.isHard || false);
+
+            document.getElementById('answer-area').style.display = 'none';
+            document.getElementById('action-buttons').style.display = 'none';
+            document.getElementById('click-hint').style.display = 'block';
+        }
+
+        function flipCard() {
+            if (document.getElementById('answer-area').style.display === 'block') return; // Já virou
+            playFlipSound();
+            document.getElementById('answer-area').style.display = 'block';
+            document.getElementById('action-buttons').style.display = 'flex';
+            document.getElementById('click-hint').style.display = 'none';
+        }
+
+        function answerCard(isCorrect) {
+            registerStudyDay(); // Garante que o streak atualize no primeiro card
+            const today = getTodayStr();
+            if(!historyStats[today]) historyStats[today] = { hits: 0, misses: 0 };
+
+            if (isCorrect) {
+                historyStats[today].hits++;
+                currentCard.consecutiveHits = (currentCard.consecutiveHits || 0) + 1; 
+            } else {
+                historyStats[today].misses++;
+                currentCard.consecutiveHits = 0; 
+            }
+
+            const stepIndex = Math.min(currentCard.consecutiveHits, intervals.length - 1);
+            const daysToAdd = isCorrect ? intervals[stepIndex] : intervals[0];
+            currentCard.nextReview = Date.now() + (daysToAdd * 86400000);
+
+            const index = deck.findIndex(c => c.id === currentCard.id);
+            if (index !== -1) deck[index] = currentCard;
+
+            saveData();
+            dueCards.shift();
+            showNextCard();
+        }
+
+        function toggleTag(e, tagStr) {
+            e.stopPropagation();
+            if(!currentCard) return;
+            currentCard[tagStr] = !currentCard[tagStr];
+            const index = deck.findIndex(c => c.id === currentCard.id);
+            if (index !== -1) deck[index] = currentCard;
+            saveData();
+            
+            // Atualiza classe visual do botão
+            e.target.classList.toggle(tagStr === 'isFavorite' ? 'active-fav' : 'active-hard', currentCard[tagStr]);
+        }
+
+        // --- Editor Seguro ---
+        function saveCard(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-id').value;
+            const front = document.getElementById('input-front').value.trim();
+            const back = document.getElementById('input-back').value.trim();
+
+            if (id) { // Editando
+                const index = deck.findIndex(c => c.id === id);
+                if(index > -1) {
+                    deck[index].front = front;
+                    deck[index].back = back;
+                }
+            } else { // Novo
+                deck.push({
+                    id: Date.now().toString(),
+                    front: front,
+                    back: back,
+                    consecutiveHits: 0,
+                    nextReview: Date.now(),
+                    isFavorite: false,
+                    isHard: false
+                });
+            }
+
+            saveData();
+            document.getElementById('card-form').reset();
+            document.getElementById('edit-id').value = "";
+            renderDeckList();
+            alert("Salvo com sucesso!");
+        }
+
+        function editCard(id) {
+            const c = deck.find(c => c.id === id);
+            if(!c) return;
+            document.getElementById('edit-id').value = c.id;
+            document.getElementById('input-front').value = c.front;
+            document.getElementById('input-back').value = c.back;
+            window.scrollTo(0,0);
+        }
+
+        function deleteCard(id) {
+            if(confirm("Certeza que deseja deletar?")) {
+                deck = deck.filter(c => c.id !== id);
+                saveData();
+                renderDeckList();
+            }
+        }
+
+        function renderDeckList() {
+            const list = document.getElementById('deck-list');
+            list.innerHTML = "";
+            deck.forEach(c => {
+                let tags = "";
+                if(c.isFavorite) tags += `<span class="tag tag-fav">Fav</span>`;
+                if(c.isHard) tags += `<span class="tag tag-hard">Difícil</span>`;
+                
+                list.innerHTML += `
+                    <div class="card-list-item">
+                        <div>
+                            <strong>${c.front}</strong> -> ${c.back} ${tags}
+                        </div>
+                        <div>
+                            <button onclick="editCard('${c.id}')" style="padding: 4px; font-size:12px;">✏️</button>
+                            <button onclick="deleteCard('${c.id}')" style="padding: 4px; font-size:12px; background:var(--danger);">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // --- Gráfico Histórico (Chart.js) ---
+        function renderChart() {
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            
+            // Pegar os últimos 7 dias com dados
+            const dates = Object.keys(historyStats).sort().slice(-7);
+            const hitsData = dates.map(d => historyStats[d].hits);
+            const missesData = dates.map(d => historyStats[d].misses);
+
+            if(chartInstance) chartInstance.destroy();
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: dates.length ? dates : ['Nenhum dado'],
+                    datasets: [
+                        { label: 'Acertos', data: hitsData, backgroundColor: '#38a169' },
+                        { label: 'Erros', data: missesData, backgroundColor: '#e53e3e' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: { y: { beginAtZero: true, stacked: true }, x: { stacked: true } }
+                }
+            });
+        }
+
+        // --- Import / Export ---
+        function exportDeck() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(deck));
+            const a = document.createElement('a');
+            a.setAttribute("href", dataStr);
+            a.setAttribute("download", "meu_deck_pro.json");
+            a.click();
+        }
+
+        function importDeck(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if(Array.isArray(imported)){
+                        deck = imported;
+                        saveData();
+                        renderDeckList();
+                        alert("Deck importado!");
+                    }
+                } catch (error) { alert("Arquivo inválido!"); }
+            };
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+</html>
