@@ -1,0 +1,143 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif;
+  --color-duo-green: #58cc02;
+  --color-duo-green-dark: #46a302;
+  --color-duo-green-light: #89e219;
+  --color-duo-blue: #1cb0f6;
+  --color-duo-blue-dark: #1899d6;
+  --color-duo-red: #ff4b4b;
+  --color-duo-red-dark: #ea2b2b;
+  --color-duo-yellow: #ffc800;
+  --color-duo-orange: #ff9600;
+  --color-duo-purple: #ce82ff;
+  --color-duo-gray: #afafaf;
+  --color-duo-bg: #235390;
+  --color-duo-surface: #ffffff;
+  --color-duo-text: #4b4b4b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: var(--font-sans);
+  color: var(--color-duo-text);
+  background: linear-gradient(180deg, #235390 0%, #1a4278 100%);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100dvh;
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-6px);
+  }
+  40%,
+  80% {
+    transform: translateX(6px);
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.4s ease-out;
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+.animate-pop {
+  animation: pop 0.3s ease-out;
+}
+
+.animate-float {
+  animation: float 2s ease-in-out infinite;
+}
+
+.duo-btn {
+  @apply relative rounded-2xl border-b-4 px-6 py-3 font-extrabold uppercase tracking-wide transition-all active:translate-y-0.5 active:border-b-2;
+}
+
+.duo-btn-green {
+  @apply bg-duo-green border-duo-green-dark text-white hover:brightness-105;
+}
+
+.duo-btn-blue {
+  @apply bg-duo-blue border-duo-blue-dark text-white hover:brightness-105;
+}
+
+.duo-btn-red {
+  @apply bg-duo-red border-duo-red-dark text-white hover:brightness-105;
+}
+
+.duo-btn-gray {
+  @apply bg-duo-gray/30 border-duo-gray/50 text-duo-text hover:bg-duo-gray/40;
+}
+
+.duo-card {
+  @apply rounded-3xl border-2 border-gray-200 bg-white shadow-lg;
+}
+
+.duo-option {
+  @apply w-full rounded-2xl border-2 border-gray-200 bg-white px-4 py-4 text-left font-bold transition-all hover:bg-gray-50 active:scale-[0.98];
+}
+
+.duo-option-correct {
+  @apply border-duo-green bg-green-50 text-duo-green-dark;
+}
+
+.duo-option-wrong {
+  @apply border-duo-red bg-red-50 text-duo-red-dark;
+}
+
+.duo-option-selected {
+  @apply border-duo-blue bg-blue-50;
+}

@@ -1,0 +1,21 @@
+# Dependências e build
+node_modules/
+dist/
+
+# Segredos — nunca commitar
+.env
+.env.local
+.env.*.local
+
+# Logs (podem conter dados sensíveis)
+*.log
+npm-debug.log*
+
+# SO / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# TypeScript cache
+*.tsbuildinfo
