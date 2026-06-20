@@ -1,6 +1,6 @@
 # FlashLingo — Guia de Funcionalidades
 
-Este documento descreve tudo que o app faz, do ponto de vista de quem usa — não de como foi construído. Para detalhes técnicos e de segurança, veja `README_TECNICO.md` (versão com servidor) ou os documentos da versão monolítica.
+Este documento descreve tudo que o app faz, do ponto de vista de quem usa — não de como foi construído. Para detalhes técnicos e de segurança, veja `README_TECNICO.md` (versão com servidor) ou os documentos da versão monolítica. Para executar o app baixe qualquer versão e abre ele em seu navegador
 
 ---
 
